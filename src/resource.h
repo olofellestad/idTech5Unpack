@@ -31,10 +31,10 @@ public:
 	ResourceContainer( const char *fileName );
 	~ResourceContainer();
 
-	// void Load_DBFG( UINT32 u );
-	void Load_RAGE( UINT32 u );
-	// void Load_RES3( UINT32 u );
-	// void Load_RES5( UINT32 u );
+	// void Load_DBFG();
+	void Load_RAGE();
+	// void Load_RES3();
+	// void Load_RES5();
 
 private:
 	const char	 *name;

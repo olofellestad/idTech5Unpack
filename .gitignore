@@ -33,6 +33,9 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+gameresources_sp_01/
+resources/
+
 build/
 *.bin
 *.hexproj

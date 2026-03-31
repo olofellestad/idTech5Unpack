@@ -48,12 +48,12 @@ ResourceContainer::ResourceContainer( const char *fileName )
 	}
 
 	UINT32 u = ReadU32_BE( fileHandle );
-	printf( "ResourceContainer::ResourceContainer: 0x%08X\n", u );
 	switch ( u ) {
 	case 0xD000000D: /*dbfg*/ CloseHandle( fileHandle ); break; // TODO: support
 	case 0x03534552: /*res3*/ CloseHandle( fileHandle ); break; // TODO: support
 	case 0x05534552: /*res5*/ CloseHandle( fileHandle ); break; // TODO: support
-	default:		 Load_RAGE( u ); break;
+	case 0x2294ABCD: Load_RAGE(); break;
+	default:		 CloseHandle( fileHandle ); break;
 	}
 }
 
@@ -62,14 +62,12 @@ ResourceContainer::~ResourceContainer()
 	CloseHandle( fileHandle );
 }
 
-void ResourceContainer::Load_RAGE( UINT32 unknown01 )
+void ResourceContainer::Load_RAGE()
 {
 	// Header
-	(void)unknown01; // I don't know what these are for...
-
 	UINT32 indexOffset = ReadU32_BE( fileHandle );
-	UINT32 unknown02   = ReadU32_BE( fileHandle );
-	(void)unknown02; // I don't know what these are for...
+	UINT32 indexSize   = ReadU32_BE( fileHandle );
+	(void)indexSize;
 
 	// this is where the data is
 	dataOffset = SetFilePointer( fileHandle, 0, nullptr, FILE_CURRENT );
@@ -85,7 +83,7 @@ void ResourceContainer::Load_RAGE( UINT32 unknown01 )
 
 		rf.rc = this;
 
-		UINT32 unknown03 = ReadU32_BE( fileHandle );
+		UINT32 unknown03 = ReadU32_BE( fileHandle ); // flags?
 		(void)unknown03;
 
 		UINT32 typeNameLen = ReadU32_LE( fileHandle );
@@ -122,8 +120,8 @@ void ResourceContainer::Load_RAGE( UINT32 unknown01 )
 		// some kind of checksum? seems to be the same for all files
 		(void)ReadU32_BE( fileHandle ); // ??? always 0x00FFFFFF ( be )
 		(void)ReadU32_BE( fileHandle ); // ??? always 0x00000000 ( be )
-		(void)ReadU32_BE( fileHandle ); // ??? always 0x4318BEFD in .resources ( be ), checksum?
-		(void)ReadU32_BE( fileHandle ); // ??? always 0xFE070000 in .resources ( be ), checksum?
+		(void)ReadU32_BE( fileHandle ); // ??? always 0x4318BEFD ( be ) in .resources, checksum?
+		(void)ReadU32_BE( fileHandle ); // ??? always 0xFE070000 ( be ) in .resources, checksum?
 		(void)ReadU32_BE( fileHandle ); // ??? always 0x00000000 ( be )
 	}
 }
