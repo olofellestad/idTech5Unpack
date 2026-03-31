@@ -120,6 +120,7 @@ public:
     void Remove( char value );
     void Clear();
     
+//  void Resize( int64 length );
     void Reserve( int64 size );
     void Shrink();
     

@@ -7,6 +7,8 @@
 static void Read( handle64 fileHandle, void *ptr, uint32 size )
 {
 	(void)System_FileRead( fileHandle, ptr, size );
+	// UNUSED(ptr);
+	// System_FileSeek( fileHandle, size, FILE_CURR );
 }
 
 static uint32 ReadUint32_LE( handle64 fileHandle )
@@ -72,17 +74,17 @@ void ResourceContainer::Load_RAGE()
 		(void)unknown03;
 
 		uint32 typeNameLen = ReadUint32_LE( fileHandle );
-		rf.typeName.Reserve( typeNameLen );
+		rf.typeName.Reserve( typeNameLen + 1 );
 		Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
 		rf.typeName[ typeNameLen ] = '\0';
 
 		uint32 srcNameLen = ReadUint32_LE( fileHandle );
-		rf.srcName.Reserve( srcNameLen );
+		rf.srcName.Reserve( srcNameLen + 1 );
 		Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
 		rf.srcName[ srcNameLen ] = '\0';
 
 		uint32 dstNameLen = ReadUint32_LE( fileHandle );
-		rf.dstName.Reserve( dstNameLen );
+		rf.dstName.Reserve( dstNameLen + 1 );
 		Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
 		rf.dstName[ dstNameLen ] = '\0';
 

@@ -12,9 +12,6 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_compile_definitions( $<$<CONFIG:Release>:BUILD_RELEASE> )
-add_compile_definitions( $<$<CONFIG:Debug>:BUILD_DEBUG> )
-
 set( EXTERN_DIR "${CMAKE_SOURCE_DIR}/ext" )
 set( SOURCE_DIR "${CMAKE_SOURCE_DIR}/src" )
 
@@ -28,6 +25,8 @@ endif()
 
 add_compile_definitions( SOURCE_DIR="${SOURCE_DIR}" )
 
+add_compile_definitions( $<$<CONFIG:Release>:BUILD_RELEASE> )
+add_compile_definitions( $<$<CONFIG:Debug>:BUILD_DEBUG> )
 add_compile_definitions( $<$<CONFIG:Debug>:DEBUG_MEMORY> )
 
 #--------------------------------------------------------------------------------------------------------------------------------

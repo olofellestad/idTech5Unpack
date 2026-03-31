@@ -11,7 +11,7 @@ int main( int argc, char **argv )
 		return 1;
 	}
 
-	unpack->Run();
+	// unpack->Run();
 	unpack->Shutdown();
 
 	Memory_CheckLeaks();
