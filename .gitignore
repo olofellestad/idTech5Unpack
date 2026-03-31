@@ -36,6 +36,12 @@ bld/
 gameresources_sp_01/
 resources/
 
+*.patch
+*.index
+*.resources
+
+.DS_Store
+
 build/
 *.bin
 *.hexproj

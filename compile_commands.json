@@ -1,0 +1,62 @@
+[
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -emit-pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -x c++-header -o CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -c /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.cxx",
+  "file": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.cxx",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/sys/sys_macos.cpp.o -c /Users/olofellestad/idTech5Unpack/src/sys/sys_macos.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/sys/sys_macos.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/sys/sys_macos.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/resource.cpp.o -c /Users/olofellestad/idTech5Unpack/src/resource.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/resource.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/resource.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/unpack.cpp.o -c /Users/olofellestad/idTech5Unpack/src/unpack.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/unpack.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/unpack.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/lib/containers/str.cpp.o -c /Users/olofellestad/idTech5Unpack/src/lib/containers/str.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/lib/containers/str.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/lib/containers/str.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/lib/math/hash.cpp.o -c /Users/olofellestad/idTech5Unpack/src/lib/math/hash.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/lib/math/hash.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/lib/math/hash.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/lib/math/rand.cpp.o -c /Users/olofellestad/idTech5Unpack/src/lib/math/rand.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/lib/math/rand.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/lib/math/rand.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/lib/mem/memory.cpp.o -c /Users/olofellestad/idTech5Unpack/src/lib/mem/memory.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/lib/mem/memory.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/lib/mem/memory.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/lib/precompiled.cpp.o -c /Users/olofellestad/idTech5Unpack/src/lib/precompiled.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/lib/precompiled.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/lib/precompiled.cpp.o"
+},
+{
+  "directory": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug",
+  "command": "/usr/bin/c++ -DBUILD_DEBUG -DSOURCE_DIR=\\\"/Users/olofellestad/idTech5Unpack/src\\\" -I/Users/olofellestad/idTech5Unpack/ext -I/Users/olofellestad/idTech5Unpack/src -g -std=c++20 -Wall -Wextra -Wpedantic -Werror -Winvalid-pch -Xclang -include-pch -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/cmake_pch.hxx -o CMakeFiles/idTech5Unpack.dir/src/lib/sys/sys_macos.cpp.o -c /Users/olofellestad/idTech5Unpack/src/lib/sys/sys_macos.cpp",
+  "file": "/Users/olofellestad/idTech5Unpack/src/lib/sys/sys_macos.cpp",
+  "output": "/Users/olofellestad/idTech5Unpack/build/macos-x64-debug/CMakeFiles/idTech5Unpack.dir/src/lib/sys/sys_macos.cpp.o"
+}
+]

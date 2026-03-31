@@ -9,6 +9,7 @@ bool Unpack::Init( int argc, char **argv )
 {
 	if ( argc > 1 ) {
 		rc = new ResourceContainer( argv[ 1 ] );
+/*
 		if ( argc > 2 ) {
 			for ( UINT32 i = 0; i < rc->numFiles; i++ ) {
 				ResourceFile &rf = rc->files[ i ];
@@ -57,6 +58,7 @@ bool Unpack::Init( int argc, char **argv )
 				break;
 			}
 		}
+*/
 	}
 	else {
 		return false;
@@ -73,23 +75,23 @@ void Unpack::Shutdown()
 void Unpack::Run()
 {
 	printf( "====================\n" );
-	printf( "%s\n", rc->name );
+	printf( "%s\n", rc->fileName.GetPtr() );
 	printf( "====================\n" );
-	for ( UINT32 i = 0; i < rc->numFiles; i++ ) {
+	for ( int64 i = 0; i < rc->files.GetNum(); i++ ) {
 		ResourceFile &rf = rc->files[ i ];
 
 		if ( rf.dstSize != rf.srcSize ) {
 			// continue; // skip compressed files
 		}
 
-		printf( "%-16s\t", rf.typeName );
-		printf( "%-96s\t", rf.srcName );
-		printf( "%-96s\t", rf.dstName );
+		printf( "%-16s\t", rf.typeName.GetPtr() );
+		printf( "%-96s\t", rf.srcName.GetPtr() );
+		printf( "%-96s\t", rf.dstName.GetPtr() );
 		printf( "%-16u\t", rf.srcSize );
 		printf( "%-16u\n", rf.dstSize );
 	}
 
 	printf( "====================\n" );
-	printf( "total files: %u\n", rc->numFiles );
+	printf( "total files: %lli\n", rc->files.GetNum() );
 	printf( "====================\n" );
 }

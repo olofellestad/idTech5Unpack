@@ -1,8 +1,5 @@
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
 class ResourceContainer;
 
 class ResourceFile
@@ -10,15 +7,14 @@ class ResourceFile
 	friend class ResourceContainer;
 	friend class Unpack;
 
-public:
 private:
-	const char *typeName;
-	const char *srcName;
-	const char *dstName;
+	Str typeName;
+	Str srcName;
+	Str dstName;
 
-	UINT32 dstOffset;
-	UINT32 srcSize;
-	UINT32 dstSize;
+	uint32 dstOffset;
+	uint32 srcSize;
+	uint32 dstSize;
 
 	ResourceContainer *rc;
 };
@@ -28,7 +24,7 @@ class ResourceContainer
 	friend class Unpack;
 
 public:
-	ResourceContainer( const char *fileName );
+	ResourceContainer( const char *_fileName );
 	~ResourceContainer();
 
 	// void Load_DBFG();
@@ -37,10 +33,10 @@ public:
 	// void Load_RES5();
 
 private:
-	const char	 *name;
-	ResourceFile *files;
+	Str fileName;
 
-	HANDLE fileHandle;
-	UINT32 dataOffset;
-	UINT32 numFiles;
+	TList< ResourceFile > files;
+
+	handle64 fileHandle;
+	uint32   dataOffset;
 };
