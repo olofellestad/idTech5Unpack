@@ -1,0 +1,3 @@
+D:/idTech5Unpack/build/windows-x64-debug/CMakeFiles/idTech5Unpack.dir
+D:/idTech5Unpack/build/windows-x64-debug/CMakeFiles/edit_cache.dir
+D:/idTech5Unpack/build/windows-x64-debug/CMakeFiles/rebuild_cache.dir

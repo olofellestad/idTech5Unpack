@@ -1,0 +1,42 @@
+{
+	"version": 8,
+	"configurePresets": [
+		{
+			"displayName": "Base Debug",
+			"name": "base-debug",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"generator": "Ninja",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			},
+
+			"hidden": true
+		},
+
+		{
+			"displayName": "Base Release",
+			"name": "base-release",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"generator": "Ninja",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			},
+
+			"hidden": true
+		},
+
+		{
+			"inherits": "base-debug",
+
+			"displayName": "Windows x64 Debug",
+			"name": "windows-x64-debug",
+		},
+
+		{
+			"inherits": "base-release",
+
+			"displayName": "Windows x64 Release",
+			"name": "windows-x64-release"
+		}
+	]
+}

@@ -1,0 +1,20 @@
+[
+{
+  "directory": "D:/idTech5Unpack/build/windows-x64-debug",
+  "command": "C:\\PROGRA~1\\MICROS~1\\18\\Insiders\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DBUILD_DEBUG -D_CRT_SECURE_NO_WARNINGS /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od -std:c++20 -MDd -RTC1 -Zi /W4 /WX @CMakeFiles\\idTech5Unpack.dir\\src\\main.cpp.obj.modmap /FoCMakeFiles\\idTech5Unpack.dir\\src\\main.cpp.obj /FdCMakeFiles\\idTech5Unpack.dir\\ /FS -c D:\\idTech5Unpack\\src\\main.cpp",
+  "file": "D:/idTech5Unpack/src/main.cpp",
+  "output": "D:/idTech5Unpack/build/windows-x64-debug/CMakeFiles/idTech5Unpack.dir/src/main.cpp.obj"
+},
+{
+  "directory": "D:/idTech5Unpack/build/windows-x64-debug",
+  "command": "C:\\PROGRA~1\\MICROS~1\\18\\Insiders\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DBUILD_DEBUG -D_CRT_SECURE_NO_WARNINGS /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od -std:c++20 -MDd -RTC1 -Zi /W4 /WX @CMakeFiles\\idTech5Unpack.dir\\src\\resource.cpp.obj.modmap /FoCMakeFiles\\idTech5Unpack.dir\\src\\resource.cpp.obj /FdCMakeFiles\\idTech5Unpack.dir\\ /FS -c D:\\idTech5Unpack\\src\\resource.cpp",
+  "file": "D:/idTech5Unpack/src/resource.cpp",
+  "output": "D:/idTech5Unpack/build/windows-x64-debug/CMakeFiles/idTech5Unpack.dir/src/resource.cpp.obj"
+},
+{
+  "directory": "D:/idTech5Unpack/build/windows-x64-debug",
+  "command": "C:\\PROGRA~1\\MICROS~1\\18\\Insiders\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DBUILD_DEBUG -D_CRT_SECURE_NO_WARNINGS /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od -std:c++20 -MDd -RTC1 -Zi /W4 /WX @CMakeFiles\\idTech5Unpack.dir\\src\\unpack.cpp.obj.modmap /FoCMakeFiles\\idTech5Unpack.dir\\src\\unpack.cpp.obj /FdCMakeFiles\\idTech5Unpack.dir\\ /FS -c D:\\idTech5Unpack\\src\\unpack.cpp",
+  "file": "D:/idTech5Unpack/src/unpack.cpp",
+  "output": "D:/idTech5Unpack/build/windows-x64-debug/CMakeFiles/idTech5Unpack.dir/src/unpack.cpp.obj"
+}
+]

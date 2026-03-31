@@ -1,0 +1,37 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "MSVC",
+	"compiler-id" : "MSVC",
+	"compiler-simulate-id" : "",
+	"config" : "Debug",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "D:/idTech5Unpack/build/windows-x64-debug",
+	"dir-cur-src" : "D:/idTech5Unpack",
+	"dir-top-bld" : "D:/idTech5Unpack/build/windows-x64-debug",
+	"dir-top-src" : "D:/idTech5Unpack",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : [],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "D:/idTech5Unpack/build/windows-x64-debug/CMakeFiles/idTech5Unpack.dir",
+	"sources" : 
+	{
+		"CMakeFiles/idTech5Unpack.dir/src/main.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "D:/idTech5Unpack/src/main.cpp"
+		},
+		"CMakeFiles/idTech5Unpack.dir/src/resource.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "D:/idTech5Unpack/src/resource.cpp"
+		},
+		"CMakeFiles/idTech5Unpack.dir/src/unpack.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "D:/idTech5Unpack/src/unpack.cpp"
+		}
+	}
+}

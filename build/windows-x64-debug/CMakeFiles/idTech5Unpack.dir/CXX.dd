@@ -1,0 +1,7 @@
+ninja_dyndep_version = 1.0
+build CMakeFiles\idTech5Unpack.dir\src\main.cpp.obj: dyndep
+
+build CMakeFiles\idTech5Unpack.dir\src\resource.cpp.obj: dyndep
+
+build CMakeFiles\idTech5Unpack.dir\src\unpack.cpp.obj: dyndep
+
