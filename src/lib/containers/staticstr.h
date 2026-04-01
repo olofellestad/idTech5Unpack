@@ -10,11 +10,12 @@ class TStaticStr
     
 public:
     constexpr TStaticStr();
-    constexpr TStaticStr( const char *_ptr, int64 num );
+    constexpr TStaticStr( const char *_ptr, int64 _num );
     constexpr TStaticStr( const char *_ptr );
     
     ~TStaticStr() = default;
     
+    int64 GetSize() const;
     int64 GetLength() const;
     
     int64 GetBytes() const;
@@ -27,7 +28,7 @@ public:
     void Formatv( const char *format, std::va_list args );
     void Format( const char *format, ... );
     
-    TSpan< char > Slice( int64 offset, int64 num ) const;
+    TSpan< char > Slice( int64 offset, int64 _num ) const;
 /*
     int64         FindIndex( int64 start, char value ) const;
     int64         FindIndex( int64 start, const Str &str ) const;
@@ -61,23 +62,26 @@ public:
     char &      operator[]( int64 index );
     
 private:
-    char ptr[ NUM + 1 ];
+    char  ptr[ NUM + 1 ];
+	int64 num;
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------
 template< int64 NUM >
 constexpr TStaticStr< NUM >::TStaticStr()
+	: num( 0 )
 {
     Memory_Fill( ptr, '\0', NUM + 1 );
 }
 
 template< int64 NUM >
-constexpr TStaticStr< NUM >::TStaticStr( const char *_ptr, int64 num )
+constexpr TStaticStr< NUM >::TStaticStr( const char *_ptr, int64 _num )
+	: num( _num )
 {
-    ASSERT( num == NUM );
+    ASSERT( num <= NUM );
     
     Memory_Copy( ptr, _ptr, num );
-    ptr[ NUM ] = '\0';
+    ptr[ num ] = '\0';
 }
 
 template< int64 NUM >
@@ -87,15 +91,21 @@ constexpr TStaticStr< NUM >::TStaticStr( const char *_ptr )
 }
 
 template< int64 NUM >
+int64 TStaticStr< NUM >::GetSize() const
+{
+    return NUM + 1;
+}
+
+template< int64 NUM >
 int64 TStaticStr< NUM >::GetLength() const
 {
-    return NUM;
+    return num;
 }
 
 template< int64 NUM >
 int64 TStaticStr< NUM >::GetBytes() const
 {
-    return ( NUM + 1 ) * sizeof( char );
+    return GetSize() * sizeof( char );
 }
 
 template< int64 NUM >
@@ -113,13 +123,13 @@ char *TStaticStr< NUM >::GetPtr()
 template< int64 NUM >
 const char *TStaticStr< NUM >::GetEnd() const
 {
-    return ptr + NUM;
+    return ptr + num;
 }
 
 template< int64 NUM >
 char *TStaticStr< NUM >::GetEnd()
 {
-    return ptr + NUM;
+    return ptr + num;
 }
 
 template< int64 NUM >
@@ -138,18 +148,19 @@ void TStaticStr< NUM >::Format( const char *format, ... )
 }
 
 template< int64 NUM >
-TSpan< char > TStaticStr< NUM >::Slice( int64 offset, int64 num ) const
+TSpan< char > TStaticStr< NUM >::Slice( int64 offset, int64 _num ) const
 {
-    ASSERT( ( ptr + offset + num ) >= ptr );
-    ASSERT( ( offset + num ) <= NUM );
+    ASSERT( ( ptr + offset + _num ) >= ptr );
+    ASSERT( ( offset + _num ) <= num );
+    ASSERT( ( offset + _num ) <= NUM );
     
-    return TSpan< char >( ptr + offset, num );
+    return TSpan< char >( ptr + offset, _num );
 }
 
 template< int64 NUM >
 bool TStaticStr< NUM >::operator==( const TStaticStr &other ) const
 {
-    return Str::Compare( ptr, other.ptr, NUM );
+    return Str::Compare( ptr, other.ptr, num );
 }
 
 template< int64 NUM >
@@ -162,7 +173,7 @@ template< int64 NUM >
 const char &TStaticStr< NUM >::operator[]( int64 index ) const
 {
     ASSERT( index >= 0 );
-    ASSERT( index < NUM );
+    ASSERT( index <= NUM );
     
     return ptr[ index ];
 }
@@ -172,7 +183,7 @@ template< int64 NUM >
 char &TStaticStr< NUM >::operator[]( int64 index )
 {
     ASSERT( index >= 0 );
-    ASSERT( index < NUM );
+    ASSERT( index <= NUM );
     
     return ptr[ index ];
 }
