@@ -14,14 +14,14 @@ int main( int argc, char **argv )
 	unpack->Run();
 	unpack->Shutdown();
 
-	System_Log( va( "current memory: %lli\n"
-					"maximum memory: %lli\n"
-					"current allocs: %lli\n"
-					"maximum allocs: %lli",
-					Memory_GetCurrentMemory(), 
-					Memory_GetMaximumMemory(),
-					Memory_GetCurrentAllocs(), 
-					Memory_GetMaximumAllocs() ) );
+	System_Info( "current memory: %lli\n"
+				 "maximum memory: %lli\n"
+			 	 "current allocs: %lli\n"
+				 "maximum allocs: %lli",
+				 Memory_GetCurrentMemory(), 
+				 Memory_GetMaximumMemory(),
+				 Memory_GetCurrentAllocs(), 
+				 Memory_GetMaximumAllocs() );
 	Memory_CheckLeaks();
 
 	return 0;

@@ -1,22 +1,6 @@
 #include "resource.h"
 
-static void Read( handle64 fileHandle, void *ptr, uint32 size )
-{
-	(void)System_FileRead( fileHandle, ptr, size );
-}
-
-static uint32 ReadUint32_LE( handle64 fileHandle )
-{
-	uint32 u = 0;
-	int64  n = System_FileRead( fileHandle, &u, sizeof( u ) );
-	return n == sizeof( u ) ? u : 0;
-}
-
-static uint32 ReadUint32_BE( handle64 fileHandle )
-{
-	uint32 u = ReadUint32_LE( fileHandle );
-	return BYTESWAP32( u );
-}
+#include "file/file.h"
 
 ResourceFile::ResourceFile( ResourceContainer *_rc )
 	: rc( _rc )
@@ -48,6 +32,51 @@ ResourceFile::ResourceFile( const ResourceFile &other )
 	, dstSize( 0 )
 {
 	*this = other;
+}
+
+bool ResourceFile::IsCompressed() const
+{
+	return srcSize != dstSize;
+}
+
+bool ResourceFile::Unpack()
+{
+	TStaticStr< 255 > outName;
+
+	// this is a mess...
+	const char *rcExt = rc->fileName.Find( 0ll, '.' );
+	const char *rcPtr = rc->fileName.GetPtr();
+
+	outName.Format( "%.*s/%s", (int64)( rcExt - rcPtr ),
+							   rcPtr, dstName.GetPtr() );
+
+	const char *srcExt = Str::Find( srcName.GetPtr(), '.' );
+	const char *dstExt = Str::Find( dstName.GetPtr(), '.' );
+
+	// TODO: DEFLATE compression
+	if ( IsCompressed() && Str::ICompare( srcExt, dstExt ) != 0 ) {
+		return false;
+	}
+
+	void *buffer = Memory_Malloc( dstSize );
+    System_FileSeek( rc->fileHandle, dstOffset, FILE_HEAD );
+    if ( System_FileRead( rc->fileHandle, buffer, dstSize ) != dstSize ) {
+		Memory_Free( buffer );
+        System_Warn( "Failed to read '%s'", dstName.GetPtr() );
+		return false;
+    }
+
+	handle64 fileHandle = INVALID_HANDLE64;
+	File_Recurse( &fileHandle, outName.GetPtr() );
+
+	if ( System_FileWrite( fileHandle, buffer, dstSize ) != dstSize ) {
+		System_Warn( "Failed to write '%s'", outName.GetPtr() );
+	}
+
+	System_FileClose( fileHandle );
+	Memory_Free( buffer );
+
+	return true;
 }
 
 ResourceFile &ResourceFile::operator=( ResourceFile &&other ) noexcept
@@ -84,6 +113,7 @@ ResourceFile &ResourceFile::operator=( const ResourceFile &other )
 	return *this;
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------
 ResourceContainer::ResourceContainer( const char *_fileName )
 	: fileName( _fileName )
 	, fileHandle( INVALID_HANDLE64 )
@@ -93,7 +123,7 @@ ResourceContainer::ResourceContainer( const char *_fileName )
 		return;
 	}
 
-	uint32 magicNumber = ReadUint32_BE( fileHandle );
+	uint32 magicNumber = File_ReadUint32B( fileHandle );
 	switch ( magicNumber ) {
 	case 0xD000000D: System_Fail( "Unsupported file!" ); System_FileClose( fileHandle ); break; // TODO: DOOM BFG
 	case 0x03534552: System_Fail( "Unsupported file!" ); System_FileClose( fileHandle ); break; // TODO: res3
@@ -111,17 +141,17 @@ ResourceContainer::~ResourceContainer()
 void ResourceContainer::Load_RAGE()
 {
 	// Header
-	uint32 indexOffset = ReadUint32_BE( fileHandle );
-	uint32 indexSize   = ReadUint32_BE( fileHandle );
+	uint32 indexOffset = File_ReadUint32B( fileHandle );
+	uint32 indexSize   = File_ReadUint32B( fileHandle );
 	(void)indexSize;
 
 	// this is where the data is
-	dataOffset = System_FileSeek( fileHandle, 0, FILE_CURR );
+	dataOffset = File_Tell( fileHandle );
 
 	// Index
-	System_FileSeek( fileHandle, indexOffset, FILE_HEAD );
+	File_Seek( fileHandle, indexOffset );
 
-	uint32 numFiles = ReadUint32_BE( fileHandle );
+	uint32 numFiles = File_ReadUint32B( fileHandle );
 
 	// files.Resize( numFiles );
 	files.Reserve( numFiles );
@@ -129,47 +159,54 @@ void ResourceContainer::Load_RAGE()
 	for ( uint32 i = 0; i < numFiles; i++ ) {
 		ResourceFile rf( this );
 
-		uint32 unknown03 = ReadUint32_BE( fileHandle ); // flags?
+		uint32 unknown03 = File_ReadUint32B( fileHandle ); // flags?
 		(void)unknown03;
 
-		uint32 typeNameLen = ReadUint32_LE( fileHandle );
+		uint32 typeNameLen = File_ReadUint32L( fileHandle );
 		rf.typeName.Resize( typeNameLen );
-		Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
+		File_Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
 		rf.typeName[ typeNameLen ] = '\0';
 
-		uint32 srcNameLen = ReadUint32_LE( fileHandle );
+		uint32 srcNameLen = File_ReadUint32L( fileHandle );
 		rf.srcName.Resize( srcNameLen );
-		Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
+		File_Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
 		rf.srcName[ srcNameLen ] = '\0';
 
-		uint32 dstNameLen = ReadUint32_LE( fileHandle );
+		uint32 dstNameLen = File_ReadUint32L( fileHandle );
 		rf.dstName.Resize( dstNameLen );
-		Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
+		File_Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
 		rf.dstName[ dstNameLen ] = '\0';
 
-		rf.dstOffset = ReadUint32_BE( fileHandle );
-		rf.srcSize	 = ReadUint32_BE( fileHandle );
-		rf.dstSize	 = ReadUint32_BE( fileHandle );
+		rf.dstOffset = File_ReadUint32B( fileHandle );
+		rf.srcSize	 = File_ReadUint32B( fileHandle );
+		rf.dstSize	 = File_ReadUint32B( fileHandle );
 
 		// optional data, for idmsa files this is a list of languages
 		// each entry is always 24 bytes
-		uint32 numUnknown = ReadUint32_BE( fileHandle );
+		uint32 numUnknown = File_ReadUint32B( fileHandle );
 		for ( uint32 j = 0; j < numUnknown; j++ ) {
-			(void)ReadUint32_BE( fileHandle ); // ???
-			(void)ReadUint32_BE( fileHandle ); // ???
-			(void)ReadUint32_BE( fileHandle ); // ???
-			(void)ReadUint32_BE( fileHandle ); // ???
-			(void)ReadUint32_BE( fileHandle ); // ???
-			(void)ReadUint32_BE( fileHandle ); // ???
+			(void)File_ReadUint32B( fileHandle ); // ???
+			(void)File_ReadUint32B( fileHandle ); // ???
+			(void)File_ReadUint32B( fileHandle ); // ???
+			(void)File_ReadUint32B( fileHandle ); // ???
+			(void)File_ReadUint32B( fileHandle ); // ???
+			(void)File_ReadUint32B( fileHandle ); // ???
 		}
 
 		// some kind of checksum? seems to be the same for all files
-		(void)ReadUint32_BE( fileHandle ); // ??? always 0x00FFFFFF ( be )
-		(void)ReadUint32_BE( fileHandle ); // ??? always 0x00000000 ( be )
-		(void)ReadUint32_BE( fileHandle ); // ??? always 0x4318BEFD ( be ) in .resources, checksum?
-		(void)ReadUint32_BE( fileHandle ); // ??? always 0xFE070000 ( be ) in .resources, checksum?
-		(void)ReadUint32_BE( fileHandle ); // ??? always 0x00000000 ( be )
+		(void)File_ReadUint32B( fileHandle ); // ??? always 0x00FFFFFF ( be )
+		(void)File_ReadUint32B( fileHandle ); // ??? always 0x00000000 ( be )
+		(void)File_ReadUint32B( fileHandle ); // ??? always 0x4318BEFD ( be ) in .resources, checksum?
+		(void)File_ReadUint32B( fileHandle ); // ??? always 0xFE070000 ( be ) in .resources, checksum?
+		(void)File_ReadUint32B( fileHandle ); // ??? always 0x00000000 ( be )
 		
 		files.Insert( rf.dstName, std::move( rf ) );
+	}
+}
+
+void ResourceContainer::Unpack()
+{
+	for ( int64 i = 0; i < files.GetNum(); i++ ) {
+		files[ i ].Unpack();
 	}
 }

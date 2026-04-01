@@ -1,3 +1,6 @@
+//--------------------------------------------------------------------------------------------------------------------------------
+// resource.h
+//--------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 
 // this uses more memory but we no longer allocate during file loading
@@ -16,8 +19,10 @@ public:
 	ResourceFile( const ResourceFile &other );
 
 	~ResourceFile() = default;
+
+	bool IsCompressed() const;
 	
-	void Unpack();
+	bool Unpack();
 
 	ResourceFile &operator=( ResourceFile &&other ) noexcept;
 	ResourceFile &operator=( const ResourceFile &other );
@@ -42,6 +47,7 @@ private:
 
 class ResourceContainer
 {
+	friend class ResourceFile;
 	friend class Unpack;
 
 public:

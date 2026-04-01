@@ -28,6 +28,30 @@ static time64 MACOS_TimespecTotime64( struct timespec ts )
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
+const char *System_FilePath( const char *fileName )
+{
+    ASSERT( LEN_FILE_PATH >= PATH_MAX );
+    static char filePath[ PATH_MAX ];
+    
+/*
+    const char *p = fileName;
+    char *q       = filePath;
+
+    while ( *p && ( ( q - filePath ) < LEN_FILE_PATH ) ) {
+        switch ( *p ) {
+        case '\\':  *( q++ ) = '/'; p++; break;
+        default:    *( q++ ) = *( p++ ); break;
+        }
+    }
+*/
+    if ( realpath( fileName, filePath ) != nullptr ) {
+        return filePath;
+    }
+
+    System_Info( "ERR: System_FilePath: %s", MACOS_GetErrorMessage() );
+    return fileName;
+}
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"
 
@@ -44,7 +68,7 @@ bool System_FileOpen( handle64 *h, const char *fileName, int fileFlags )
         return true;
     }
     
-    System_Log( va( "ERR: System_FileOpen: %s", MACOS_GetErrorMessage() ) );
+    System_Info( "ERR: System_FileOpen: %s", MACOS_GetErrorMessage() );
     return false;
 }
 
@@ -67,7 +91,7 @@ int64 System_FileRead( handle64 h, void *buffer, int64 size )
         return (int64)bytesRead;
     }
 
-    System_Log( va( "ERR: System_FileRead: %s", MACOS_GetErrorMessage() ) );
+    System_Info( "ERR: System_FileRead: %s", MACOS_GetErrorMessage() );
     return INVALID_INT64;
 }
 
@@ -80,7 +104,7 @@ int64 System_FileWrite( handle64 h, const void *buffer, int64 size )
         return (int64)bytesWritten;
     }
 
-    System_Log( va( "ERR: System_FileWrite: %s", MACOS_GetErrorMessage() ) );
+    System_Info( "ERR: System_FileWrite: %s", MACOS_GetErrorMessage() );
     return INVALID_INT64;
 }
  
@@ -96,7 +120,7 @@ int64 System_FileSeek( handle64 h, int64 position, int where )
         return (int64)offset;
     }
     
-    System_Log( va( "ERR: System_FileSeek: %s", MACOS_GetErrorMessage() ) );
+    System_Info( "ERR: System_FileSeek: %s", MACOS_GetErrorMessage() );
     return INVALID_INT64;
 }
 
@@ -108,7 +132,7 @@ int64 System_FileSize( handle64 h )
         return (int64)st.st_size;
     }
     
-    System_Log( va( "ERR: System_FileSize: %s", MACOS_GetErrorMessage() ) );
+    System_Info( "ERR: System_FileSize: %s", MACOS_GetErrorMessage() );
     return INVALID_INT64;
 }
 
@@ -120,32 +144,8 @@ time64 System_FileTime( handle64 h )
         return (int64)st.st_mtime * 1000000LL;
     }
     
-    System_Log( va( "ERR: System_FileSize: %s", MACOS_GetErrorMessage() ) );
+    System_Info( "ERR: System_FileSize: %s", MACOS_GetErrorMessage() );
     return INVALID_INT64;
-}
-
-const char *System_GetFilePath( const char *fileName )
-{
-    ASSERT( LEN_FILE_PATH >= PATH_MAX );
-    static char filePath[ PATH_MAX ];
-    
-/*
-    const char *p = fileName;
-    char *q       = filePath;
-
-    while ( *p && ( ( q - filePath ) < LEN_FILE_PATH ) ) {
-        switch ( *p ) {
-        case '\\':  *( q++ ) = '/'; p++; break;
-        default:    *( q++ ) = *( p++ ); break;
-        }
-    }
-*/
-    if ( realpath( fileName, filePath ) != nullptr ) {
-        return filePath;
-    }
-
-    System_Log( va( "ERR: System_GetFilePath: %s", MACOS_GetErrorMessage() ) );
-    return fileName;
 }
 
 bool System_Mkdir( const char *dirName )
@@ -154,7 +154,7 @@ bool System_Mkdir( const char *dirName )
         return true;
     }
     
-    System_Log( va( "ERR: System_Mkdir: %s", MACOS_GetErrorMessage() ) );
+    System_Info( "ERR: System_Mkdir: %s", MACOS_GetErrorMessage() );
     return false;
 }
 
@@ -178,11 +178,6 @@ const char *System_GetUserDir( const char *org, const char *app ) {}
 
 const char *System_GetRootDir() {}
 */
-void System_Log( const char *message )
-{
-    printf( "%s\n", message );
-}
-
 #pragma clang diagnostic pop
 //--------------------------------------------------------------------------------------------------------------------------------
 const char *System_GetHostName()
@@ -286,8 +281,41 @@ bool System_GetBuildDateTime( dateTime_t *dt )
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
-void System_Fail( const char *message )
+void System_Info( const char *_message, ... )
 {
+	static char message[ LEN_MESSAGE ];
+
+	va_list args;
+    va_start( args, _message );
+    vsnprintf( message, LEN_MESSAGE, _message, args );
+    va_end( args );
+
+	fprintf( stdout, "%s\n", message );
+}
+
+void System_Warn( const char *_message, ... )
+{
+	static char message[ LEN_MESSAGE ];
+
+	va_list args;
+    va_start( args, _message );
+    vsnprintf( message, LEN_MESSAGE, _message, args );
+    va_end( args );
+
+    CFStringRef msg = CFStringCreateWithCString( NULL, message, kCFStringEncodingUTF8 );
+    CFUserNotificationDisplayAlert( 0, kCFUserNotificationCautionAlertLevel, NULL, NULL, NULL,
+                                    CFSTR( "Warning" ), msg, NULL, NULL, NULL, NULL );
+}
+
+void System_Fail( const char *_message, ... )
+{
+	static char message[ LEN_MESSAGE ];
+
+	va_list args;
+    va_start( args, _message );
+    vsnprintf( message, LEN_MESSAGE, _message, args );
+    va_end( args );
+
     CFStringRef msg = CFStringCreateWithCString( NULL, message, kCFStringEncodingUTF8 );
     CFUserNotificationDisplayAlert( 0, kCFUserNotificationStopAlertLevel, NULL, NULL, NULL,
                                     CFSTR( "Fatal" ), msg, NULL, NULL, NULL, NULL );

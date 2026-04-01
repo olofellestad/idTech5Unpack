@@ -49,8 +49,13 @@ public:
     static constexpr uint64 IHash( const char *ptr );
     static constexpr uint64 IHash( const char *ptr, int64 num );
     
-    static constexpr int64 Formatv( char *ptr, int64 num, const char *format, std::va_list args );
-    static constexpr int64 Format( char *ptr, int64 num, const char *format, ... );
+    static constexpr int64 Formatv( char *ptr, int64 num, const char *fmt, std::va_list args );
+    static constexpr int64 Format( char *ptr, int64 num, const char *fmt, ... );
+
+	static constexpr const char *Find( const char *ptr, int64 num, char value );
+	static constexpr const char *Find( const char *ptr, char value );
+	static constexpr const char *FindLast( const char *ptr, int64 num, char value );
+	static constexpr const char *FindLast( const char *ptr, char value );
     
     static constexpr char ToLower( char value );
     static constexpr char ToUpper( char value );
@@ -124,7 +129,8 @@ public:
     void Reserve( int64 size );
     void Shrink();
     
-    TSpan< char > Slice( int64 offset, int64 num ) const;
+    TView< char > Slice( int64 offset, int64 num ) const;
+    TSpan< char > Slice( int64 offset, int64 num );
     
     int64       FindIndex( int64 start, char value ) const;
     int64       FindIndex( int64 start, const Str &str ) const;
@@ -314,14 +320,52 @@ constexpr int64 Str::Formatv( char *ptr, int64 num, const char *format, std::va_
     return std::vsnprintf( ptr, num, format, args );
 }
 
-constexpr int64 Str::Format( char *ptr, int64 num, const char *format, ... )
+constexpr int64 Str::Format( char *ptr, int64 num, const char *fmt, ... )
 {
     va_list args;
-    va_start( args, format );
-    int64 n = Formatv( ptr, num, format, args );
+    va_start( args, fmt );
+    int64 n = Formatv( ptr, num, fmt, args );
     va_end( args );
     
     return n;
+}
+
+constexpr const char *Str::Find( const char *ptr, int64 num, char value )
+{
+	for ( int64 i = 0; i < num; i++ ) {
+		if ( ptr[ i ] == value ) {
+			return ptr + i;
+		}
+	}
+
+	return nullptr;
+}
+
+constexpr const char *Str::Find( const char *ptr, char value )
+{
+	for ( int64 i = 0; ptr[ i ]; i++ ) {
+		if ( ptr[ i ] == value ) {
+			return ptr + i;
+		}
+	}
+
+	return nullptr;
+}
+
+constexpr const char *Str::FindLast( const char *ptr, int64 num, char value )
+{
+	for ( int64 i = num - 1; i >= 0; i-- ) {
+		if ( ptr[ i ] == value ) {
+			return ptr + i;
+		}
+	}
+
+	return nullptr;
+}
+
+constexpr const char *Str::FindLast( const char *ptr, char value )
+{
+	return Str::FindLast( ptr, Str::GetLength( ptr ), value );
 }
 
 constexpr char Str::ToLower( char value )

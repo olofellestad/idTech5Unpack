@@ -1,5 +1,7 @@
 #include "unpack.h"
 
+#include "file/file.h"
+
 #include <stdio.h>
 
 #include <miniz_tinfl.h>
@@ -125,12 +127,11 @@ void Unpack::Run()
 			// continue; // skip compressed files
 		}
 #endif
-		// printf( "%-16s\t", rf.typeName.GetPtr() );
-		// printf( "%-96s\t", rf.srcName.GetPtr() );
-		// printf( "%-96s\t", rf.dstName.GetPtr() );
-		// printf( "%-16u\t", rf.srcSize );
-		// printf( "%-16u\n", rf.dstSize );
-		UNUSED(rf);
+		printf( "%-16s\t", rf.typeName.GetPtr() );
+		printf( "%-96s\t", rf.srcName.GetPtr() );
+		printf( "%-96s\t", rf.dstName.GetPtr() );
+		printf( "%-16u\t", rf.srcSize );
+		printf( "%-16u\n", rf.dstSize );
 	}
 
 	printf( "====================\n" );

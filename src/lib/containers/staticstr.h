@@ -30,7 +30,8 @@ public:
     
  	void Resize( int64 length );
 
-    TSpan< char > Slice( int64 offset, int64 _num ) const;
+    TView< char > Slice( int64 offset, int64 _num ) const;
+    TSpan< char > Slice( int64 offset, int64 _num );
 /*
     int64         FindIndex( int64 start, char value ) const;
     int64         FindIndex( int64 start, const Str &str ) const;
@@ -170,7 +171,17 @@ void TStaticStr< NUM >::Resize( int64 length )
 }
 
 template< int64 NUM >
-TSpan< char > TStaticStr< NUM >::Slice( int64 offset, int64 _num ) const
+TView< char > TStaticStr< NUM >::Slice( int64 offset, int64 _num ) const
+{
+    ASSERT( ( ptr + offset + _num ) >= ptr );
+    ASSERT( ( offset + _num ) <= num );
+    ASSERT( ( offset + _num ) <= NUM );
+    
+    return TView< char >( ptr + offset, _num );
+}
+
+template< int64 NUM >
+TSpan< char > TStaticStr< NUM >::Slice( int64 offset, int64 _num )
 {
     ASSERT( ( ptr + offset + _num ) >= ptr );
     ASSERT( ( offset + _num ) <= num );

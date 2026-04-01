@@ -31,11 +31,11 @@ void *Memory_Malloc( int64 size, const char *fileName, int fileLine )
     
     allocInfo.Append( m );
 /*
-    System_Log( va( "Memory_Malloc: %s:%i: %p ( %lli )",
-                    ( (allocInfo_t *)m )->fileName,
-                    ( (allocInfo_t *)m )->fileLine,
-                    ( (void *)m ),
-                    ( (allocInfo_t *)m )->size ) );
+    System_Info( "Memory_Malloc: %s:%i: %p ( %lli )",
+                 ( (allocInfo_t *)m )->fileName,
+                 ( (allocInfo_t *)m )->fileLine,
+                 ( (void *)m ),
+                 ( (allocInfo_t *)m )->size );
 */
     currentMemory += m->size;
     maximumMemory = MAX( maximumMemory, currentMemory );
@@ -89,14 +89,14 @@ void Memory_CheckLeaks()
     int64 leak = 0;
     
     for ( TLink< allocInfo_t > *m = allocInfo.GetHead(); m->next != allocInfo.GetHead(); m = m->next ) {
-        System_Log( va( "Memory_CheckLeaks: %s:%i: %p ( %lli )",
-                        ( (allocInfo_t *)m )->fileName,
-                        ( (allocInfo_t *)m )->fileLine,
-                        ( (void *)m ),
-                        ( (allocInfo_t *)m )->size ) );
+        System_Info( "Memory_CheckLeaks: %s:%i: %p ( %lli )",
+                     ( (allocInfo_t *)m )->fileName,
+                     ( (allocInfo_t *)m )->fileLine,
+                     ( (void *)m ),
+                     ( (allocInfo_t *)m )->size );
         leak += ( (allocInfo_t *)m )->size;
     }
     
-    System_Log( va( "Memory_CheckLeaks: %lli bytes leaked", leak ) );
+    System_Info( "Memory_CheckLeaks: %lli bytes leaked", leak );
 }
 #endif

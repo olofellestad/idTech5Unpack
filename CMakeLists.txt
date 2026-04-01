@@ -63,9 +63,11 @@ else()
 endif()
 
 #--------------------------------------------------------------------------------------------------------------------------------
-set( PROJECT_SOURCES	"${SOURCE_DIR}/resource.cpp"
+set( PROJECT_SOURCES	"${SOURCE_DIR}/file/file.cpp" 
+						"${SOURCE_DIR}/resource.cpp"
 						"${SOURCE_DIR}/unpack.cpp" )
-set( PROJECT_HEADERS	"${SOURCE_DIR}/resource.h"
+set( PROJECT_HEADERS	"${SOURCE_DIR}/file/file.h"
+						"${SOURCE_DIR}/resource.h"
 						"${SOURCE_DIR}/unpack.h" )
 if( WIN32 )
     list( APPEND PROJECT_SOURCES    "${SOURCE_DIR}/sys/sys_win32.cpp" )

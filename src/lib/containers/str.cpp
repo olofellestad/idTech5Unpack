@@ -406,19 +406,27 @@ void Str::Shrink()
     }
 }
 
-
-TSpan< char > Str::Slice( int64 offset, int64 num ) const
+TView< char > Str::Slice( int64 offset, int64 num ) const
 {
     ASSERT( offset >= 0 );
     ASSERT( num >= 0 );
     ASSERT( offset + num <= GetLength() );
     
-    return TSpan< char >( const_cast< char * >( GetPtr() + offset ), num );
+    return TView< char >( GetPtr() + offset, num );
+}
+
+TSpan< char > Str::Slice( int64 offset, int64 num )
+{
+    ASSERT( offset >= 0 );
+    ASSERT( num >= 0 );
+    ASSERT( offset + num <= GetLength() );
+    
+    return TSpan< char >(GetPtr() + offset, num );
 }
 
 int64 Str::FindIndex( int64 start, char value ) const
 {
-    int64         num = GetLength();
+    int64       num = GetLength();
     const char *ptr = GetPtr();
     
     for ( int64 i = start; i < num; i++ ) {
@@ -442,7 +450,7 @@ int64 Str::FindIndex( int64 start, const char *ptr ) const
  
 int64 Str::FindIndex( int64 start, const char *_ptr, int64 _num ) const
 {
-    int64         num = GetLength();
+    int64       num = GetLength();
     const char *ptr = GetPtr();
     
     if ( _num == 0 || _num > num ) {
@@ -460,7 +468,7 @@ int64 Str::FindIndex( int64 start, const char *_ptr, int64 _num ) const
 
 int64 Str::FindLastIndex( int64 start, char value ) const
 {
-    int64         num = GetLength();
+    int64       num = GetLength();
     const char *ptr = GetPtr();
     
     for ( int64 i = num - 1; i >= start; i-- ) {
@@ -484,7 +492,7 @@ int64 Str::FindLastIndex( int64 start, const char *ptr ) const
  
 int64 Str::FindLastIndex( int64 start, const char *_ptr, int64 _num ) const
 {
-    int64         num = GetLength();
+    int64       num = GetLength();
     const char *ptr = GetPtr();
     
     if ( _num == 0 || _num > num ) {
