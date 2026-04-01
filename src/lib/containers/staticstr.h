@@ -68,6 +68,17 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------------------------
 template< int64 NUM >
+class TSort< TStaticStr< NUM > >
+{
+public:
+    int Compare( const TStaticStr< NUM > &a, const TStaticStr< NUM > &b ) const
+    {
+        return Str::Compare( a.GetPtr(), b.GetPtr() );
+    }
+};
+
+//--------------------------------------------------------------------------------------------------------------------------------
+template< int64 NUM >
 constexpr TStaticStr< NUM >::TStaticStr()
 	: num( 0 )
 {

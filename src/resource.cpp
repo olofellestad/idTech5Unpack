@@ -133,17 +133,20 @@ void ResourceContainer::Load_RAGE()
 		(void)unknown03;
 
 		uint32 typeNameLen = ReadUint32_LE( fileHandle );
-		rf.typeName.Resize( typeNameLen );
+		ASSERT( typeNameLen < 256 );
+		// rf.typeName.Resize( typeNameLen );
 		Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
 		rf.typeName[ typeNameLen ] = '\0';
 
 		uint32 srcNameLen = ReadUint32_LE( fileHandle );
-		rf.srcName.Resize( srcNameLen );
+		ASSERT( srcNameLen < 256 );
+		// rf.srcName.Resize( srcNameLen );
 		Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
 		rf.srcName[ srcNameLen ] = '\0';
 
 		uint32 dstNameLen = ReadUint32_LE( fileHandle );
-		rf.dstName.Resize( dstNameLen );
+		ASSERT( dstNameLen < 256 );
+		// rf.dstName.Resize( dstNameLen );
 		Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
 		rf.dstName[ dstNameLen ] = '\0';
 

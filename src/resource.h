@@ -1,5 +1,8 @@
 #pragma once
 
+// this uses more memory but we no longer allocate during file loading
+#define USE_STATIC_STR
+
 class ResourceContainer;
 
 class ResourceFile
@@ -22,9 +25,15 @@ public:
 private:
 	ResourceContainer *rc;
 
+#ifdef USE_STATIC_STR
+	TStaticStr< 255 > typeName;
+	TStaticStr< 255 > srcName;
+	TStaticStr< 255 > dstName;
+#else
 	Str typeName;
 	Str srcName;
 	Str dstName;
+#endif
 
 	uint32 dstOffset;
 	uint32 srcSize;
@@ -47,7 +56,11 @@ public:
 	void Unpack();
 
 private:
+#ifdef USE_STATIC_STR
+	TFlatMap< TStaticStr< 255 >, ResourceFile > files;
+#else
 	TFlatMap< Str, ResourceFile > files;
+#endif
 
 	Str fileName;
 
