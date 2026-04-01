@@ -189,16 +189,18 @@ Type *TList< Type >::GetEnd()
 template< class Type >
 void TList< Type >::Insert( int64 index, const Type &value )
 {
-    ASSERT( ptr != nullptr );
+    // ASSERT( ptr != nullptr );
     ASSERT( index >= 0 );
     ASSERT( index <= num );
     
     if ( ( ptr + num ) >= end ) {
         Realloc();
     }
-    
+
+    // move was broken here...
+	// maybe bug in Str
     for ( int64 i = num; i > index; i-- ) {
-        ptr[ i ] = std::move( ptr[ i - 1 ] );
+        ptr[ i ] = ptr[ i - 1 ];
     }
     
     ptr[ index ] = value;
@@ -238,7 +240,7 @@ void TList< Type >::RemoveIndex( int64 index )
     
     --num;
     for ( int64 i = index; i < num; i++ ) {
-        ptr[ i ] = std::move( ptr[ i + 1 ] );
+        ptr[ i ] = ptr[ i + 1 ];
     }
 }
 

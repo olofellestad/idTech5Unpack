@@ -7,8 +7,6 @@
 static void Read( handle64 fileHandle, void *ptr, uint32 size )
 {
 	(void)System_FileRead( fileHandle, ptr, size );
-	// UNUSED(ptr);
-	// System_FileSeek( fileHandle, size, FILE_CURR );
 }
 
 static uint32 ReadUint32_LE( handle64 fileHandle )
@@ -35,12 +33,17 @@ ResourceContainer::ResourceContainer( const char *_fileName )
 
 	uint32 magicNumber = ReadUint32_BE( fileHandle );
 	switch ( magicNumber ) {
-	case 0xD000000D: /*dbfg*/ System_FileClose( fileHandle ); break; // TODO: support
-	case 0x03534552: /*res3*/ System_FileClose( fileHandle ); break; // TODO: support
-	case 0x05534552: /*res5*/ System_FileClose( fileHandle ); break; // TODO: support
+	case 0xD000000D: System_Fail( "Unsupported file!" ); System_FileClose( fileHandle ); break; // TODO: DOOM BFG
+	case 0x03534552: System_Fail( "Unsupported file!" ); System_FileClose( fileHandle ); break; // TODO: res3
+	case 0x05534552: System_Fail( "Unsupported file!" ); System_FileClose( fileHandle ); break; // TODO: res5
 	case 0x2294ABCD: Load_RAGE(); break;
-	default:		 System_FileClose( fileHandle ); break;
+	default:		 System_Fail( "Unsupported file!" ); System_FileClose( fileHandle ); break;
 	}
+}
+
+ResourceFile::ResourceFile( ResourceContainer *_rc )
+	: rc( _rc )
+{
 }
 
 ResourceContainer::~ResourceContainer()
@@ -63,28 +66,27 @@ void ResourceContainer::Load_RAGE()
 
 	uint32 numFiles = ReadUint32_BE( fileHandle );
 
-	files.Resize( numFiles );
+	// files.Resize( numFiles );
+	files.Reserve( numFiles );
 
-	for ( uint32 i = 0; i < files.GetNum(); i++ ) {
-		ResourceFile &rf = files[ i ];
-
-		rf.rc = this;
+	for ( uint32 i = 0; i < numFiles; i++ ) {
+		ResourceFile rf( this );
 
 		uint32 unknown03 = ReadUint32_BE( fileHandle ); // flags?
 		(void)unknown03;
 
 		uint32 typeNameLen = ReadUint32_LE( fileHandle );
-		rf.typeName.Reserve( typeNameLen + 1 );
+		rf.typeName.Resize( typeNameLen );
 		Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
 		rf.typeName[ typeNameLen ] = '\0';
 
 		uint32 srcNameLen = ReadUint32_LE( fileHandle );
-		rf.srcName.Reserve( srcNameLen + 1 );
+		rf.srcName.Resize( srcNameLen );
 		Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
 		rf.srcName[ srcNameLen ] = '\0';
 
 		uint32 dstNameLen = ReadUint32_LE( fileHandle );
-		rf.dstName.Reserve( dstNameLen + 1 );
+		rf.dstName.Resize( dstNameLen );
 		Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
 		rf.dstName[ dstNameLen ] = '\0';
 
@@ -110,5 +112,7 @@ void ResourceContainer::Load_RAGE()
 		(void)ReadUint32_BE( fileHandle ); // ??? always 0x4318BEFD ( be ) in .resources, checksum?
 		(void)ReadUint32_BE( fileHandle ); // ??? always 0xFE070000 ( be ) in .resources, checksum?
 		(void)ReadUint32_BE( fileHandle ); // ??? always 0x00000000 ( be )
+		
+		files.Insert( rf.dstName, std::move( rf ) );
 	}
 }

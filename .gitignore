@@ -39,6 +39,7 @@ resources/
 *.patch
 *.index
 *.resources
+*.txt
 
 .DS_Store
 

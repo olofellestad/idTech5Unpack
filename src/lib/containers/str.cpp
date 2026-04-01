@@ -12,7 +12,7 @@ void HeapStr::Alloc( const char *_ptr, int64 _num )
     
     ptr[ _num ] = '\0';
     
-    num = ( _num << 1 ) & ~STATIC_MASK;
+    num = ( _num << 1 ) & ~STR_STATIC_MASK;
     end = ptr + _num + 1;
 }
 
@@ -22,7 +22,7 @@ void HeapStr::Clear()
         delete [] ptr;
     }
     
-    num = STATIC_MASK;
+    num = STR_STATIC_MASK;
     ptr = nullptr;
     end = nullptr;
 }
@@ -41,7 +41,7 @@ void HeapStr::Realloc( int64 size )
     
     Clear();
         
-    num = ( _num << 1 ) & ~STATIC_MASK;
+    num = ( _num << 1 ) & ~STR_STATIC_MASK;
     ptr = nptr;
     end = ptr + size;
 }
@@ -49,7 +49,7 @@ void HeapStr::Realloc( int64 size )
 //--------------------------------------------------------------------------------------------------------------------------------
 void StackStr::Alloc( const char *_ptr, int64 _num )
 {
-    ASSERT( _num < STATIC_SIZE );
+    ASSERT( _num < STR_STATIC_SIZE );
     
     if ( _ptr != nullptr && _num > 0 ) {
         Memory_Copy( buf, _ptr, _num );
@@ -57,7 +57,7 @@ void StackStr::Alloc( const char *_ptr, int64 _num )
     
     buf[ _num ] = '\0';
     
-    num = ( _num << 1 ) | STATIC_MASK;
+    num = ( _num << 1 ) | STR_STATIC_MASK;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -82,18 +82,18 @@ Str::Str( const uint32 u )
 }
 
 Str::Str()
-    : hstr( STATIC_MASK,
+    : hstr( STR_STATIC_MASK,
             nullptr,
             nullptr )
 {
 }
 
 Str::Str( const char *ptr, int64 num )
-    : hstr( STATIC_MASK,
+    : hstr( STR_STATIC_MASK,
             nullptr,
             nullptr )
 {
-    if ( num < STATIC_SIZE ) {
+    if ( num < STR_STATIC_SIZE ) {
         sstr.Alloc( ptr, num );
     }
     else {
@@ -107,11 +107,11 @@ Str::Str( const char *ptr )
 }
 
 Str::Str( char value, int64 num )
-    : hstr( STATIC_MASK,
+    : hstr( STR_STATIC_MASK,
             nullptr,
             nullptr )
 {
-    if ( num < STATIC_SIZE ) {
+    if ( num < STR_STATIC_SIZE ) {
         sstr.Alloc( nullptr, num );
         Memory_Fill( sstr.buf, value, num );
     }
@@ -124,13 +124,13 @@ Str::Str( char value, int64 num )
 Str::Str( Str &&other ) noexcept
     : sstr( other.sstr )
 {
-    other.hstr.num = STATIC_MASK;
+    other.hstr.num = STR_STATIC_MASK;
     other.hstr.ptr = nullptr;
     other.hstr.end = nullptr;
 }
 
 Str::Str( const Str &other )
-    : hstr( STATIC_MASK,
+    : hstr( STR_STATIC_MASK,
             nullptr,
             nullptr )
 {
@@ -144,7 +144,7 @@ Str::~Str()
 
 bool Str::IsStatic() const
 {
-    return hstr.num & STATIC_MASK;
+    return hstr.num & STR_STATIC_MASK;
 }
 
 bool Str::IsValid() const
@@ -162,7 +162,7 @@ bool Str::IsEmpty() const
 int64 Str::GetSize() const
 {
     return IsStatic()
-        ? STATIC_SIZE
+        ? STR_STATIC_SIZE
         : (int64)( hstr.end - hstr.ptr );
 }
 
@@ -195,14 +195,14 @@ char *Str::GetPtr()
 const char *Str::GetEnd() const
 {
     return IsStatic()
-        ? ( sstr.buf + STATIC_SIZE - 1 )
+        ? ( sstr.buf + STR_STATIC_SIZE - 1 )
         : ( hstr.ptr + ( hstr.num >> 1 ) );
 }
 
 char *Str::GetEnd()
 {
     return IsStatic()
-        ? ( sstr.buf + STATIC_SIZE - 1 )
+        ? ( sstr.buf + STR_STATIC_SIZE - 1 )
         : ( hstr.ptr + ( hstr.num >> 1 ) );
 }
 
@@ -347,9 +347,25 @@ void Str::Clear()
         hstr.Clear();
     }
     
-    hstr.num = STATIC_MASK;
+    hstr.num = STR_STATIC_MASK;
     hstr.ptr = nullptr;
     hstr.end = nullptr;
+}
+
+void Str::Resize( int64 length )
+{
+    ASSERT( length >= 0 );
+
+    if ( length == GetLength() ) {
+        return;
+    } else if ( length == 0 ) {
+        Clear();
+    } else if ( length < STR_STATIC_SIZE ) {
+        Shrink();
+    } else {
+       Realloc( length + 1 );
+	   SetLength( length );
+    }
 }
 
 void Str::Reserve( int64 size )
@@ -376,8 +392,8 @@ void Str::Shrink()
         return;
     }
     
-    if ( num < STATIC_SIZE ) {
-        char tmp[ STATIC_SIZE ];
+    if ( num < STR_STATIC_SIZE ) {
+        char tmp[ STR_STATIC_SIZE ];
         
         Memory_Copy( tmp, hstr.ptr, num );
         tmp[ num ] = '\0';
@@ -613,9 +629,9 @@ Str &Str::operator=( Str &&other ) noexcept
     
     sstr = other.sstr;
     
-    hstr.num = STATIC_MASK;
-    hstr.ptr = nullptr;
-    hstr.end = nullptr;
+    other.hstr.num = STR_STATIC_MASK;
+    other.hstr.ptr = nullptr;
+    other.hstr.end = nullptr;
     
     return *this;
 }
@@ -646,7 +662,7 @@ void Str::Realloc( int64 size )
         Memory_Copy( nptr, sstr.buf, num );
         nptr[ num ] = '\0';
         
-        hstr.num = ( ( num ) << 1 ) & ~STATIC_MASK;
+        hstr.num = ( ( num ) << 1 ) & ~STR_STATIC_MASK;
         hstr.ptr = nptr;
         hstr.end = nptr + size;
     }
@@ -659,9 +675,9 @@ void Str::Realloc( int64 size )
 void Str::SetLength( int64 num )
 {
     if ( IsStatic() ) {
-        sstr.num = ( num << 1 ) | STATIC_MASK;
+        sstr.num = ( num << 1 ) | STR_STATIC_MASK;
     }
     else {
-        hstr.num = ( num << 1 ) & ~STATIC_MASK;
+        hstr.num = ( num << 1 ) & ~STR_STATIC_MASK;
     }
 }

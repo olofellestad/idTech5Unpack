@@ -29,5 +29,7 @@
 #include "lib/containers/str.h"
 #include "lib/containers/staticlist.h"
 #include "lib/containers/staticstr.h"
+#include "lib/containers/flatmap.h"
 #include "lib/math/math.h"
 #include "lib/math/rand.h"
+// clang-format on

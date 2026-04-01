@@ -13,6 +13,7 @@ struct allocInfo_t : public TLink< allocInfo_t >
 static TLinkList< allocInfo_t > allocInfo;
 static int64 currentAlloc = 0;        // how much memory are we currently using?
 static int64 maximumAlloc = 0;        // how much memory did we use at most?
+static int64 numAllocs    = 0;
 
 void *Memory_Malloc( int64 size, const char *fileName, int fileLine )
 {
@@ -37,6 +38,8 @@ void *Memory_Malloc( int64 size, const char *fileName, int fileLine )
     */
     currentAlloc += m->size;
     maximumAlloc = MAX( maximumAlloc, currentAlloc );
+
+    ++numAllocs;
     
     return ( (uint8 *)ptr + sizeof( allocInfo_t ) );
 }
@@ -65,6 +68,11 @@ int64 Memory_GetCurrentAlloc()
 int64 Memory_GetMaximumAlloc()
 {
     return maximumAlloc;
+}
+
+int64 Memory_GetNumAllocs()
+{
+    return numAllocs;
 }
 
 void Memory_CheckLeaks()

@@ -5,8 +5,8 @@
 
 #include <cstdarg>
 
-#define STATIC_SIZE (int64)( sizeof( HeapStr ) - 1 )
-#define STATIC_MASK 1ll
+#define STR_STATIC_SIZE (int64)( sizeof( HeapStr ) - 1 )
+#define STR_STATIC_MASK 1ll
 
 #ifndef BYTE_ORDER_LE
 #   error Unsupported byte order!
@@ -32,7 +32,7 @@ public:
     
 public:
     uint8 num;
-    char  buf[ STATIC_SIZE ];
+    char  buf[ STR_STATIC_SIZE ];
 };
 
 // TODO: need to optimize...
@@ -120,20 +120,20 @@ public:
     void Remove( char value );
     void Clear();
     
-//  void Resize( int64 length );
+ 	void Resize( int64 length );
     void Reserve( int64 size );
     void Shrink();
     
     TSpan< char > Slice( int64 offset, int64 num ) const;
     
-    int64         FindIndex( int64 start, char value ) const;
-    int64         FindIndex( int64 start, const Str &str ) const;
-    int64         FindIndex( int64 start, const char *ptr ) const;
-    int64         FindIndex( int64 start, const char *ptr, int64 num ) const;
-    int64         FindLastIndex( int64 start, char value ) const;
-    int64         FindLastIndex( int64 start, const Str &str ) const;
-    int64         FindLastIndex( int64 start, const char *ptr ) const;
-    int64         FindLastIndex( int64 start, const char *ptr, int64 num ) const;
+    int64       FindIndex( int64 start, char value ) const;
+    int64       FindIndex( int64 start, const Str &str ) const;
+    int64       FindIndex( int64 start, const char *ptr ) const;
+    int64       FindIndex( int64 start, const char *ptr, int64 num ) const;
+    int64       FindLastIndex( int64 start, char value ) const;
+    int64       FindLastIndex( int64 start, const Str &str ) const;
+    int64       FindLastIndex( int64 start, const char *ptr ) const;
+    int64       FindLastIndex( int64 start, const char *ptr, int64 num ) const;
     const char *Find( int64 start, char value ) const;
     const char *Find( int64 start, const Str &str ) const;
     const char *Find( int64 start, const char *ptr ) const;

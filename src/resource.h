@@ -7,6 +7,12 @@ class ResourceFile
 	friend class ResourceContainer;
 	friend class Unpack;
 
+public:
+	ResourceFile( ResourceContainer *_rc );
+	~ResourceFile() = default;
+	
+	void Unpack();
+
 private:
 	Str typeName;
 	Str srcName;
@@ -32,10 +38,13 @@ public:
 	// void Load_RES3();
 	// void Load_RES5();
 
+	void Unpack();
+
 private:
 	Str fileName;
 
-	TList< ResourceFile > files;
+	// TList< ResourceFile > files;
+	TFlatMap< Str, ResourceFile > files;
 
 	handle64 fileHandle;
 	uint32   dataOffset;

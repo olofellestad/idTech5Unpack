@@ -11,9 +11,17 @@ int main( int argc, char **argv )
 		return 1;
 	}
 
-	// unpack->Run();
+	unpack->Run();
 	unpack->Shutdown();
 
+	System_Log( va( "current alloc: %lli\n"
+					"maximum alloc: %lli\n"
+					"num allocs:    %lli",
+					Memory_GetCurrentAlloc(), 
+					Memory_GetMaximumAlloc(),
+					Memory_GetNumAllocs() ) );
+
 	Memory_CheckLeaks();
+
 	return 0;
 }
