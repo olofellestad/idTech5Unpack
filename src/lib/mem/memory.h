@@ -16,6 +16,12 @@ inline Type *Memory_Place( void *ptr, Args&&... args )
     return new ( ptr ) Type( std::forward< Args >( args )... );
 }
 
+// TODO: change to
+// 	Memory_GetCurrentAlloc -> Memory_GetCurrentMemory
+// 	Memory_GetMaximumAlloc -> Memory_GetMaximumMemory
+// 	Memory_GetNumAllocs -> Memory_GetCurrentAlloc
+// 	add: Memory_GetMaximumAlloc
+
 int64 Memory_GetCurrentAlloc();
 int64 Memory_GetMaximumAlloc();
 int64 Memory_GetNumAllocs();

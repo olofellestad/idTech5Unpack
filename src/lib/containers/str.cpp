@@ -4,7 +4,7 @@ void HeapStr::Alloc( const char *_ptr, int64 _num )
 {
     Clear();
     
-    ptr = new char[ _num + 1 ];
+    ptr = (char *)Memory_Malloc( (_num + 1 ) * sizeof( char ) );
     
     if (  _ptr != nullptr && _num > 0 ) {
         Memory_Copy( ptr, _ptr, _num );
@@ -19,7 +19,7 @@ void HeapStr::Alloc( const char *_ptr, int64 _num )
 void HeapStr::Clear()
 {
     if ( ptr != nullptr ) {
-        delete [] ptr;
+		Memory_Free( ptr );
     }
     
     num = STR_STATIC_MASK;
@@ -32,7 +32,7 @@ void HeapStr::Realloc( int64 size )
     ASSERT( size > 0 );
     
     int64 _num   = MIN( num >> 1, size - 1 );
-    char *nptr = new char[ size ];
+	char *nptr = (char *)Memory_Malloc( size * sizeof( char ) );
     
     if ( ptr != nullptr ) {
         Memory_Copy( nptr, ptr, _num );
@@ -658,7 +658,8 @@ void Str::Realloc( int64 size )
 {
     int64 num = GetLength();
     if ( IsStatic() ) {
-        char *nptr = new char[ size ? size : 64 ];
+        // char *nptr = new char[ size ? size : 64 ];
+        char *nptr = (char *)Memory_Malloc( ( size ? size : 64 ) * sizeof( char ) );
         Memory_Copy( nptr, sstr.buf, num );
         nptr[ num ] = '\0';
         

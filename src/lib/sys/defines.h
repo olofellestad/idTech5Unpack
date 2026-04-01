@@ -88,6 +88,7 @@
 #   define ALWAYS_INLINE inline
 #endif
 
+#define NOUNIQUE  [[no_unique_address]]
 #define NODISCARD [[nodiscard]]
 
 #define MAKE_DEFAULT_COPYABLE( x )                      \

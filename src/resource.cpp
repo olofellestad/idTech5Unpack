@@ -22,6 +22,72 @@ static uint32 ReadUint32_BE( handle64 fileHandle )
 	return SWAP32( u );
 }
 
+ResourceFile::ResourceFile( ResourceContainer *_rc )
+	: dstOffset( 0 )
+	, srcSize( 0 )
+	, dstSize( 0 )
+	, rc( _rc )
+{
+}
+
+ResourceFile::ResourceFile( ResourceFile &&other ) noexcept
+	: typeName( std::move( other.typeName ) )
+	, srcName( std::move( other.srcName ) )
+	, dstName( std::move( other.dstName ) )
+	, dstOffset( other.dstOffset )
+	, srcSize( other.srcSize )
+	, dstSize( other.dstSize )
+	, rc( other.rc )
+{
+	other.dstOffset = 0;
+	other.srcSize   = 0;
+	other.dstSize   = 0;
+	other.rc        = nullptr;
+}
+
+ResourceFile::ResourceFile( const ResourceFile &other )
+	: dstOffset( 0 )
+	, srcSize( 0 )
+	, dstSize( 0 )
+	, rc( nullptr )
+{
+	*this = other;
+}
+
+ResourceFile &ResourceFile::operator=( ResourceFile &&other ) noexcept
+{
+	if ( this == &other ) {
+		return *this;
+	}
+
+    typeName  = std::move( other.typeName );
+    srcName   = std::move( other.srcName );
+    dstName   = std::move( other.dstName );
+    dstOffset = other.dstOffset;
+    srcSize   = other.srcSize;
+    dstSize   = other.dstSize;
+    rc        = other.rc;
+
+	return *this;
+}
+
+ResourceFile &ResourceFile::operator=( const ResourceFile &other )
+{
+	if ( this == &other ) {
+		return *this;
+	}
+
+    typeName  = other.typeName;
+    srcName   = other.srcName;
+    dstName   = other.dstName;
+    dstOffset = other.dstOffset;
+    srcSize   = other.srcSize;
+    dstSize   = other.dstSize;
+    rc        = other.rc;
+
+	return *this;
+}
+
 ResourceContainer::ResourceContainer( const char *_fileName )
 	: fileName( _fileName )
 	, fileHandle( INVALID_HANDLE64 )
@@ -39,11 +105,6 @@ ResourceContainer::ResourceContainer( const char *_fileName )
 	case 0x2294ABCD: Load_RAGE(); break;
 	default:		 System_Fail( "Unsupported file!" ); System_FileClose( fileHandle ); break;
 	}
-}
-
-ResourceFile::ResourceFile( ResourceContainer *_rc )
-	: rc( _rc )
-{
 }
 
 ResourceContainer::~ResourceContainer()

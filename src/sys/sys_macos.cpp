@@ -7,6 +7,8 @@ void System_Quit( int code )
 
 int main( int argc, char **argv )
 {
+	UNUSED(argc);UNUSED(argv);
+
 	if ( !unpack->Init( argc, argv ) ) {
 		return 1;
 	}
@@ -20,7 +22,6 @@ int main( int argc, char **argv )
 					Memory_GetCurrentAlloc(), 
 					Memory_GetMaximumAlloc(),
 					Memory_GetNumAllocs() ) );
-
 	Memory_CheckLeaks();
 
 	return 0;

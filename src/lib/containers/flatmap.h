@@ -20,6 +20,7 @@ public:
     constexpr int64 GetBytes() const;
 
     void Insert( const KType &key, const VType &value );
+    void Insert( const KType &key, VType &&value );
 
     template< class... Args >
     void Emplace( const KType &key, Args&&... args );
@@ -47,7 +48,7 @@ public:
 private:
 	TList< VType > values;
 	TList< KType > keys;
-	Sort		   sort;
+	NOUNIQUE Sort  sort;
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -102,6 +103,20 @@ void TFlatMap< KType, VType, Sort >::Insert( const KType &key, const VType &valu
 	else {
 		keys.Insert( index, key );
 		values.Insert( index, value );
+	}
+}
+
+template< class KType, class VType, class Sort >
+void TFlatMap< KType, VType, Sort >::Insert( const KType &key, VType &&value )
+{
+	const int64 index = LowerBound( keys.GetPtr(), keys.GetNum(), key, sort );
+
+	if ( index < keys.GetNum() && keys[ index ] == key ) {
+		values[ index ] = std::move( value );
+	}
+	else {
+		keys.Insert( index, key );
+		values.Insert( index, std::move( value ) );
 	}
 }
 

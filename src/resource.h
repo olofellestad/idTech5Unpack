@@ -9,9 +9,15 @@ class ResourceFile
 
 public:
 	ResourceFile( ResourceContainer *_rc );
+	ResourceFile( ResourceFile &&other ) noexcept;
+	ResourceFile( const ResourceFile &other );
+
 	~ResourceFile() = default;
 	
 	void Unpack();
+
+	ResourceFile &operator=( ResourceFile &&other ) noexcept;
+	ResourceFile &operator=( const ResourceFile &other );
 
 private:
 	Str typeName;

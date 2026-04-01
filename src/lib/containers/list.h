@@ -29,6 +29,7 @@ public:
     Type *                GetEnd();
     
     void Insert( int64 index, const Type &value );
+    void Insert( int64 index, Type &&value );
     void Append( const Type &value );
 
     template< class... Args >
@@ -197,13 +198,32 @@ void TList< Type >::Insert( int64 index, const Type &value )
         Realloc();
     }
 
-    // move was broken here...
-	// maybe bug in Str
     for ( int64 i = num; i > index; i-- ) {
-        ptr[ i ] = ptr[ i - 1 ];
+        // ptr[ i ] = ptr[ i - 1 ];
+        ptr[ i ] = std::move( ptr[ i - 1 ] );
     }
     
     ptr[ index ] = value;
+    ++num;
+}
+
+template< class Type >
+void TList< Type >::Insert( int64 index, Type &&value )
+{
+    // ASSERT( ptr != nullptr );
+    ASSERT( index >= 0 );
+    ASSERT( index <= num );
+    
+    if ( ( ptr + num ) >= end ) {
+        Realloc();
+    }
+
+    for ( int64 i = num; i > index; i-- ) {
+        // ptr[ i ] = ptr[ i - 1 ];
+        ptr[ i ] = std::move( ptr[ i - 1 ] );
+    }
+    
+    ptr[ index ] = std::move( value );
     ++num;
 }
 
@@ -240,7 +260,8 @@ void TList< Type >::RemoveIndex( int64 index )
     
     --num;
     for ( int64 i = index; i < num; i++ ) {
-        ptr[ i ] = ptr[ i + 1 ];
+        // ptr[ i ] = ptr[ i + 1 ];
+        ptr[ i ] = std::move( ptr[ i + 1 ] );	// TODO: Memory_Move?
     }
 }
 
