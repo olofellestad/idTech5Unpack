@@ -108,6 +108,23 @@
     x( x &&other )            = delete;                 \
     x &operator=( x &&other ) = delete;
 
+#define BYTESWAP64( x ) ( ( ( ( x ) & 0xFF00000000000000ull ) >> 56 ) \
+                        | ( ( ( x ) & 0x00FF000000000000ull ) >> 40 ) \
+                        | ( ( ( x ) & 0x0000FF0000000000ull ) >> 24 ) \
+                        | ( ( ( x ) & 0x000000FF00000000ull ) >>  8 ) \
+                        | ( ( ( x ) & 0x00000000FF000000ull ) <<  8 ) \
+                        | ( ( ( x ) & 0x0000000000FF0000ull ) << 24 ) \
+                        | ( ( ( x ) & 0x000000000000FF00ull ) << 40 ) \
+                        | ( ( ( x ) & 0x00000000000000FFull ) << 56 ) )
+
+#define BYTESWAP32( x )	( ( ( ( x ) & 0xFF000000 ) >> 24 )\
+					    | ( ( ( x ) & 0x00FF0000 ) >>  8 )\
+						| ( ( ( x ) & 0x0000FF00 ) <<  8 )\
+						| ( ( ( x ) & 0x000000FF ) << 24 ) )
+
+#define BYTESWAP16( x )	( ( ( ( x ) & 0xFF00 ) >>  8 )\
+						| ( ( ( x ) & 0x00FF ) <<  8 ) )
+
 #define HAS_BIT( a, b ) ( !!( ( a ) & ( b ) ) )
 #define BIT( x )        ( 1 << ( x ) )
 #define MAX( a, b )     ( ( a ) > ( b ) ? ( a ) : ( b ) )

@@ -36,6 +36,8 @@ bld/
 gameresources_sp_01/
 resources/
 
+compile_commands.json
+
 *.patch
 *.index
 *.resources

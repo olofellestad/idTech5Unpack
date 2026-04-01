@@ -1,9 +1,5 @@
 #include "resource.h"
 
-#define SWAP32( u )                                                                                \
-	( ( ( ( u ) & 0xFF000000 ) >> 24 ) | ( ( ( u ) & 0x00FF0000 ) >> 8 )                           \
-	  | ( ( ( u ) & 0x0000FF00 ) << 8 ) | ( ( u ) << 24 ) )
-
 static void Read( handle64 fileHandle, void *ptr, uint32 size )
 {
 	(void)System_FileRead( fileHandle, ptr, size );
@@ -19,7 +15,7 @@ static uint32 ReadUint32_LE( handle64 fileHandle )
 static uint32 ReadUint32_BE( handle64 fileHandle )
 {
 	uint32 u = ReadUint32_LE( fileHandle );
-	return SWAP32( u );
+	return BYTESWAP32( u );
 }
 
 ResourceFile::ResourceFile( ResourceContainer *_rc )
