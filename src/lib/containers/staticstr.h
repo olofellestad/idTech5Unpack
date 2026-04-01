@@ -28,6 +28,8 @@ public:
     void Formatv( const char *format, std::va_list args );
     void Format( const char *format, ... );
     
+ 	void Resize( int64 length );
+
     TSpan< char > Slice( int64 offset, int64 _num ) const;
 /*
     int64         FindIndex( int64 start, char value ) const;
@@ -159,6 +161,15 @@ void TStaticStr< NUM >::Format( const char *format, ... )
 }
 
 template< int64 NUM >
+void TStaticStr< NUM >::Resize( int64 length )
+{
+	ASSERT( length <= NUM );
+
+	num        = length;
+	ptr[ num ] = '\0';
+}
+
+template< int64 NUM >
 TSpan< char > TStaticStr< NUM >::Slice( int64 offset, int64 _num ) const
 {
     ASSERT( ( ptr + offset + _num ) >= ptr );
@@ -171,7 +182,7 @@ TSpan< char > TStaticStr< NUM >::Slice( int64 offset, int64 _num ) const
 template< int64 NUM >
 bool TStaticStr< NUM >::operator==( const TStaticStr &other ) const
 {
-    return Str::Compare( ptr, other.ptr, num );
+    return num == other.num && Str::Compare( ptr, other.ptr ) == 0;
 }
 
 template< int64 NUM >

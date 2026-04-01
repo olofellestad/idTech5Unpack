@@ -16,6 +16,9 @@ set( EXTERN_DIR "${CMAKE_SOURCE_DIR}/ext" )
 set( SOURCE_DIR "${CMAKE_SOURCE_DIR}/src" )
 
 #--------------------------------------------------------------------------------------------------------------------------------
+add_subdirectory( "${EXTERN_DIR}/miniz"	EXCLUDE_FROM_ALL )
+
+#--------------------------------------------------------------------------------------------------------------------------------
 if( MSVC )
     add_compile_definitions( _CRT_SECURE_NO_WARNINGS )
     add_compile_options( /W4 /WX )
@@ -23,6 +26,7 @@ else()
     add_compile_options( -Wall -Wextra -Wpedantic -Werror )
 endif()
 
+add_compile_definitions( EXTERN_DIR="${EXTERN_DIR}" )
 add_compile_definitions( SOURCE_DIR="${SOURCE_DIR}" )
 
 add_compile_definitions( $<$<CONFIG:Release>:BUILD_RELEASE> )
@@ -77,8 +81,9 @@ add_executable( ${PROJECT_NAME}	"${PROJECT_HEADERS}"
                                 "${PROJECT_SOURCES}"
                                 "${LIB_HEADERS}"
                                 "${LIB_SOURCES}" )
-target_include_directories( ${PROJECT_NAME} PUBLIC "${EXTERN_DIR}" "${SOURCE_DIR}" )
 target_precompile_headers( ${PROJECT_NAME}  PUBLIC "${SOURCE_DIR}/lib/precompiled.h" )
+target_include_directories( ${PROJECT_NAME} PUBLIC "${EXTERN_DIR}" "${SOURCE_DIR}" )
+target_link_libraries( ${PROJECT_NAME}	miniz )
 if( APPLE )
     target_link_libraries( ${PROJECT_NAME}  "-framework CoreFoundation" )
 endif()

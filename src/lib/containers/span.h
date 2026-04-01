@@ -28,7 +28,7 @@ public:
     
     TSpan< Type > Slice( int64 offset, int64 num ) const;
     
-    int64         FindIndex( const Type &value ) const;
+    int64       FindIndex( const Type &value ) const;
     const Type *Find( const Type &value ) const;
     Type *      Find( const Type &value );
     

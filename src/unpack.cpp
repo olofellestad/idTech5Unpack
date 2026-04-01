@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include <miniz_tinfl.h>
+
 static Unpack _unpack;
 Unpack		 *unpack = &_unpack;
 
@@ -79,16 +81,56 @@ void Unpack::Run()
 	printf( "====================\n" );
 	for ( int64 i = 0; i < rc->files.GetNum(); i++ ) {
 		ResourceFile &rf = rc->files[ i ];
-
+#if 0
 		if ( rf.dstSize != rf.srcSize ) {
+			if ( Str::ICompare( rf.dstName.GetPtr(), "script/script_events.script" ) != 0 ) {
+				continue;
+			}
+
+			printf( "%-16s\t", rf.typeName.GetPtr() );
+			printf( "%-96s\t", rf.srcName.GetPtr() );
+			printf( "%-96s\t", rf.dstName.GetPtr() );
+			printf( "%-16u\t", rf.dstOffset );
+			printf( "%-16u\t", rf.srcSize );
+			printf( "%-16u\n", rf.dstSize );
+
+			handle64 h = INVALID_HANDLE64;
+
+			char *p = strrchr( rf.dstName.GetPtr(), '/' );
+
+			if ( System_FileOpen( &h, p + 1, FILE_WRITE ) ) {
+				void *buffer = Memory_Malloc( rf.dstSize );
+
+				System_FileSeek( rc->fileHandle, rf.dstOffset, FILE_HEAD );
+				System_FileRead( rc->fileHandle, buffer, rf.dstSize );
+
+				// deflate
+				{
+					void *uncomp = Memory_Malloc( rf.srcSize );
+					
+					tinfl_decompress_mem_to_mem( uncomp, rf.srcSize, buffer, rf.dstSize, 0 );
+
+					System_FileWrite( h, uncomp, rf.dstSize );
+					Memory_Free( uncomp );
+				}
+
+				// System_FileWrite( h, buffer, rf.dstSize );
+				System_FileClose( h );
+
+				Memory_Free( buffer );
+			}
+
+			break;
+
 			// continue; // skip compressed files
 		}
-
-		printf( "%-16s\t", rf.typeName.GetPtr() );
-		printf( "%-96s\t", rf.srcName.GetPtr() );
-		printf( "%-96s\t", rf.dstName.GetPtr() );
-		printf( "%-16u\t", rf.srcSize );
-		printf( "%-16u\n", rf.dstSize );
+#endif
+		// printf( "%-16s\t", rf.typeName.GetPtr() );
+		// printf( "%-96s\t", rf.srcName.GetPtr() );
+		// printf( "%-96s\t", rf.dstName.GetPtr() );
+		// printf( "%-16u\t", rf.srcSize );
+		// printf( "%-16u\n", rf.dstSize );
+		UNUSED(rf);
 	}
 
 	printf( "====================\n" );
