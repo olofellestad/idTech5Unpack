@@ -20,6 +20,8 @@ public:
 	ResourceFile &operator=( const ResourceFile &other );
 
 private:
+	ResourceContainer *rc;
+
 	Str typeName;
 	Str srcName;
 	Str dstName;
@@ -27,8 +29,6 @@ private:
 	uint32 dstOffset;
 	uint32 srcSize;
 	uint32 dstSize;
-
-	ResourceContainer *rc;
 };
 
 class ResourceContainer
@@ -47,10 +47,9 @@ public:
 	void Unpack();
 
 private:
-	Str fileName;
-
-	// TList< ResourceFile > files;
 	TFlatMap< Str, ResourceFile > files;
+
+	Str fileName;
 
 	handle64 fileHandle;
 	uint32   dataOffset;
