@@ -7,8 +7,6 @@ void System_Quit( int code )
 
 int main( int argc, char **argv )
 {
-	UNUSED(argc);UNUSED(argv);
-
 	if ( !unpack->Init( argc, argv ) ) {
 		return 1;
 	}
@@ -16,12 +14,14 @@ int main( int argc, char **argv )
 	unpack->Run();
 	unpack->Shutdown();
 
-	System_Log( va( "current alloc: %lli\n"
-					"maximum alloc: %lli\n"
-					"num allocs:    %lli",
-					Memory_GetCurrentAlloc(), 
-					Memory_GetMaximumAlloc(),
-					Memory_GetNumAllocs() ) );
+	System_Log( va( "current memory: %lli\n"
+					"maximum memory: %lli\n"
+					"current allocs: %lli\n"
+					"maximum allocs: %lli",
+					Memory_GetCurrentMemory(), 
+					Memory_GetMaximumMemory(),
+					Memory_GetCurrentAllocs(), 
+					Memory_GetMaximumAllocs() ) );
 	Memory_CheckLeaks();
 
 	return 0;

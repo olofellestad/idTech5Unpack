@@ -19,6 +19,11 @@ public:
     
     constexpr int64 GetBytes() const;
 
+    constexpr const VType *GetPtr() const;
+    VType *                GetPtr();
+    constexpr const VType *GetEnd() const;
+    VType *                GetEnd();
+
     void Insert( const KType &key, const VType &value );
     void Insert( const KType &key, VType &&value );
 
@@ -90,6 +95,30 @@ template< class KType, class VType, class Sort >
 constexpr int64 TFlatMap< KType, VType, Sort >::GetBytes() const
 {
 	return keys.GetBytes() + values.GetBytes();
+}
+
+template< class KType, class VType, class Sort >
+constexpr const VType *TFlatMap< KType, VType, Sort >::GetPtr() const
+{
+	return values.GetPtr();
+}
+
+template< class KType, class VType, class Sort >
+VType *TFlatMap< KType, VType, Sort >::GetPtr()
+{
+	return values.GetPtr();
+}
+
+template< class KType, class VType, class Sort >
+constexpr const VType *TFlatMap< KType, VType, Sort >::GetEnd() const
+{
+	return values.GetEnd();
+}
+
+template< class KType, class VType, class Sort >
+VType *TFlatMap< KType, VType, Sort >::GetEnd()
+{
+	return values.GetEnd();
 }
 
 template< class KType, class VType, class Sort >
@@ -208,13 +237,22 @@ constexpr const VType &TFlatMap< KType, VType, Sort >::operator[]( const KType &
     const int64 index = FindIndex( key );
     return values[ index ]; 
 }
-/* TODO: need to insert value if not in map...
+
 template< class KType, class VType, class Sort >
 constexpr VType &TFlatMap< KType, VType, Sort >::operator[]( const KType &key )
 {
-	ASSERT( 0 && "not implemented" );
+	const int64 index = LowerBound( keys.GetPtr(), keys.GetNum(), key, sort );
+
+	if ( index < keys.GetNum() && keys[ index ] == key ) {
+		return values[ index ];
+	}
+
+	keys.Insert( index, key );
+	values.Insert( index, VType() );
+
+	return values[ index ];
 }
-*/
+
 template< class KType, class VType, class Sort >
 constexpr const VType &TFlatMap< KType, VType, Sort >::operator[]( int64 index ) const
 {

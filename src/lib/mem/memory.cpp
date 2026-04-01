@@ -11,9 +11,10 @@ struct allocInfo_t : public TLink< allocInfo_t >
 };
 
 static TLinkList< allocInfo_t > allocInfo;
-static int64 currentAlloc = 0;        // how much memory are we currently using?
-static int64 maximumAlloc = 0;        // how much memory did we use at most?
-static int64 numAllocs    = 0;
+static int64 currentMemory = 0;       // how much memory are we currently using?
+static int64 maximumMemory = 0;       // how much memory did we use at most?
+static int64 currentAllocs = 0;       // how many allocations are active?
+static int64 maximumAllocs = 0;       // how many allocations have we made?
 
 void *Memory_Malloc( int64 size, const char *fileName, int fileLine )
 {
@@ -36,10 +37,11 @@ void *Memory_Malloc( int64 size, const char *fileName, int fileLine )
                     ( (void *)m ),
                     ( (allocInfo_t *)m )->size ) );
 */
-    currentAlloc += m->size;
-    maximumAlloc = MAX( maximumAlloc, currentAlloc );
+    currentMemory += m->size;
+    maximumMemory = MAX( maximumMemory, currentMemory );
 
-    ++numAllocs;
+    ++currentAllocs;
+	++maximumAllocs;
     
     return ( (uint8 *)ptr + sizeof( allocInfo_t ) );
 }
@@ -55,24 +57,31 @@ void Memory_Free( void *ptr )
     allocInfo_t *m = (allocInfo_t *)ptr;
     allocInfo.Remove( m );
     
-    currentAlloc -= m->size;
+    currentMemory -= m->size;
+
+	--currentAllocs;
     
     System_Free( ptr );
 }
 
-int64 Memory_GetCurrentAlloc()
+int64 Memory_GetCurrentMemory()
 {
-    return currentAlloc;
+    return currentMemory;
 }
 
-int64 Memory_GetMaximumAlloc()
+int64 Memory_GetMaximumMemory()
 {
-    return maximumAlloc;
+    return maximumMemory;
 }
 
-int64 Memory_GetNumAllocs()
+int64 Memory_GetCurrentAllocs()
 {
-    return numAllocs;
+    return currentAllocs;
+}
+
+int64 Memory_GetMaximumAllocs()
+{
+    return maximumAllocs;
 }
 
 void Memory_CheckLeaks()

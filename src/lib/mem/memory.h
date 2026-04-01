@@ -16,15 +16,10 @@ inline Type *Memory_Place( void *ptr, Args&&... args )
     return new ( ptr ) Type( std::forward< Args >( args )... );
 }
 
-// TODO: change to
-// 	Memory_GetCurrentAlloc -> Memory_GetCurrentMemory
-// 	Memory_GetMaximumAlloc -> Memory_GetMaximumMemory
-// 	Memory_GetNumAllocs -> Memory_GetCurrentAlloc
-// 	add: Memory_GetMaximumAlloc
-
-int64 Memory_GetCurrentAlloc();
-int64 Memory_GetMaximumAlloc();
-int64 Memory_GetNumAllocs();
+int64 Memory_GetCurrentMemory();
+int64 Memory_GetMaximumMemory();
+int64 Memory_GetCurrentAllocs();
+int64 Memory_GetMaximumAllocs();
 void Memory_CheckLeaks();
 
 NODISCARD inline void *operator new( std::size_t size, const char *fileName, int fileLine )
@@ -46,9 +41,10 @@ inline Type *Memory_Place( void *ptr, Args&&... args )
     return new ( ptr ) Type( std::forward< Args >( args )... );
 }
 
-#define Memory_GetCurrentAlloc()    0ll
-#define Memory_GetMaximumAlloc()    0ll
-#define Memory_GetNumAllocs()       0ll
+#define Memory_GetCurrentMemory()   0ll
+#define Memory_GetMaximumMemory()   0ll
+#define Memory_GetCurrentAllocs()   0ll
+#define Memory_GetMaximumAllocs()   0ll
 #define Memory_CheckLeaks()         DISCARD()
 
 NODISCARD inline void *operator new( std::size_t size ) { return Memory_Malloc( (int64)size ); }
