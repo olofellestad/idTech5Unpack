@@ -85,7 +85,6 @@ template< int64 NUM >
 constexpr TStaticStr< NUM >::TStaticStr()
 	: num( 0 )
 {
-    // Memory_Fill( ptr, '\0', NUM + 1 );
 	std::memset( ptr, '\0', NUM + 1 );
 }
 
@@ -95,7 +94,6 @@ constexpr TStaticStr< NUM >::TStaticStr( const char *_ptr, int64 _num )
 {
     ASSERT( num <= NUM );
     
-    // Memory_Copy( ptr, _ptr, num );
 	std::memcpy( ptr, _ptr, num );
     ptr[ num ] = '\0';
 }
