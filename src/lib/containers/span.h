@@ -17,6 +17,7 @@ public:
     constexpr bool IsValid() const;
     constexpr bool IsEmpty() const;
     
+    constexpr int64 GetSize() const;
     constexpr int64 GetNum() const;
     
     constexpr int64 GetBytes() const;
@@ -26,7 +27,8 @@ public:
     constexpr const Type *GetEnd() const;
     Type *                GetEnd();
     
-    TSpan< Type > Slice( int64 offset, int64 num ) const;
+    TSpan< const Type > Slice( int64 offset, int64 num ) const;
+    TSpan< Type > 		Slice( int64 offset, int64 num );
     
     int64       FindIndex( const Type &value ) const;
     const Type *Find( const Type &value ) const;
@@ -71,6 +73,12 @@ constexpr bool TSpan< Type >::IsEmpty() const
 }
 
 template< class Type >
+constexpr int64 TSpan< Type >::GetSize() const
+{
+    return end - ptr;
+}
+
+template< class Type >
 constexpr int64 TSpan< Type >::GetNum() const
 {
     return end - ptr;
@@ -107,7 +115,16 @@ Type *TSpan< Type >::GetEnd()
 }
 
 template< class Type >
-TSpan< Type > TSpan< Type >::Slice( int64 offset, int64 num ) const
+TView< Type > TSpan< Type >::Slice( int64 offset, int64 num ) const
+{
+    ASSERT( ( ptr + offset + num ) >= ptr );
+    ASSERT( ( ptr + offset + num ) <= end );
+    
+    return TView< Type >( ptr + offset, num );
+}
+
+template< class Type >
+TSpan< Type > TSpan< Type >::Slice( int64 offset, int64 num )
 {
     ASSERT( ( ptr + offset + num ) >= ptr );
     ASSERT( ( ptr + offset + num ) <= end );

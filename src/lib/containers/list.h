@@ -28,8 +28,9 @@ public:
     constexpr const Type *GetEnd() const;
     Type *                GetEnd();
     
-    void Insert( int64 index, const Type &value );
     void Insert( int64 index, Type &&value );
+    void Insert( int64 index, const Type &value );
+    void Append( Type &&value );
     void Append( const Type &value );
 
     template< class... Args >
@@ -46,12 +47,13 @@ public:
     template< class Sort = TSort< Type > >
     void Sort( const Sort &sort = Sort() )
     {
-        return QuickSort( GetPtr(), GetEnd(), sort );
+        return QuickSort( ptr, end, sort );
     }
     
-    TSpan< Type > Slice( int64 offset, int64 _num ) const;
+    TView< Type > Slice( int64 offset, int64 _num ) const;
+    TSpan< Type > Slice( int64 offset, int64 _num );
     
-    int64         FindIndex( const Type &value ) const;
+    int64       FindIndex( const Type &value ) const;
     const Type *Find( const Type &value ) const;
     Type *      Find( const Type &value );
     
@@ -70,8 +72,8 @@ private:
     
 private:
     Type *ptr;
-    Type *end; // points to capacity!
-    int64   num;
+    Type *end;
+    int64 num;
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -89,10 +91,12 @@ TList< Type >::TList(std::initializer_list< Type > values )
     , end( ptr + values.size() )
     , num( values.size() )
 {
-        ASSERT( ptr != nullptr );
-        ASSERT( num > 0 );
+	ASSERT( ptr != nullptr );
+	ASSERT( num > 0 );
         
-        Memory_Copy< Type >( ptr, values.begin(), values.size() );
+	for ( int64 i = 0; i < num; i++ ) {
+		Memory_Place( ptr + i, values[ i ] );
+	}
 }
 
 template< class Type >
@@ -101,10 +105,12 @@ TList< Type >::TList( const Type &value, int64 _num )
     , end( ptr + _num )
     , num( _num )
 {
-        ASSERT( ptr != nullptr );
-        ASSERT( num > 0 );
+	ASSERT( ptr != nullptr );
+	ASSERT( num > 0 );
         
-        Memory_Fill< Type >( ptr, value, _num );
+	for ( int64 i = 0; i < num; i++ ) {
+		Memory_Place( ptr + i, value );
+	}
 }
 
 template< class Type >
@@ -124,7 +130,7 @@ TList< Type >::TList( const TList &other )
     , end( nullptr )
     , num( 0 )
 {
-        *this = other;
+    *this = other;
 }
 
 template< class Type >
@@ -188,6 +194,25 @@ Type *TList< Type >::GetEnd()
 }
 
 template< class Type >
+void TList< Type >::Insert( int64 index, Type &&value )
+{
+    // ASSERT( ptr != nullptr );
+    ASSERT( index >= 0 );
+    ASSERT( index <= num );
+    
+    if ( ( ptr + num ) >= end ) {
+		Realloc();
+    }
+
+    for ( int64 i = num; i > index; i-- ) {
+		ptr[ i ] = std::move( ptr[ i - 1 ] );
+    }
+    
+    ptr[ index ] = std::move( value );
+    ++num;
+}
+
+template< class Type >
 void TList< Type >::Insert( int64 index, const Type &value )
 {
     // ASSERT( ptr != nullptr );
@@ -199,7 +224,6 @@ void TList< Type >::Insert( int64 index, const Type &value )
     }
 
     for ( int64 i = num; i > index; i-- ) {
-        // ptr[ i ] = ptr[ i - 1 ];
         ptr[ i ] = std::move( ptr[ i - 1 ] );
     }
     
@@ -208,22 +232,13 @@ void TList< Type >::Insert( int64 index, const Type &value )
 }
 
 template< class Type >
-void TList< Type >::Insert( int64 index, Type &&value )
+void TList< Type >::Append( Type &&value )
 {
-    // ASSERT( ptr != nullptr );
-    ASSERT( index >= 0 );
-    ASSERT( index <= num );
-    
     if ( ( ptr + num ) >= end ) {
         Realloc();
     }
-
-    for ( int64 i = num; i > index; i-- ) {
-        // ptr[ i ] = ptr[ i - 1 ];
-        ptr[ i ] = std::move( ptr[ i - 1 ] );
-    }
     
-    ptr[ index ] = std::move( value );
+    ptr[ num ] = std::move( value );
     ++num;
 }
 
@@ -246,7 +261,7 @@ void TList< Type >::Emplace( Args&&... args )
         Realloc();
     }
     
-    UNUSED( Memory_Place< Type >( ptr + num, std::forward< Args >( args )... ) );
+    Memory_Place( ptr + num, std::forward< Args >( args )... );
     
     ++num;
 }
@@ -260,8 +275,7 @@ void TList< Type >::RemoveIndex( int64 index )
     
     --num;
     for ( int64 i = index; i < num; i++ ) {
-        // ptr[ i ] = ptr[ i + 1 ];
-        ptr[ i ] = std::move( ptr[ i + 1 ] );	// TODO: Memory_Move?
+        ptr[ i ] = std::move( ptr[ i + 1 ] );
     }
 }
 
@@ -290,8 +304,6 @@ void TList< Type >::Clear()
     num = 0;
 }
 
-// TODO: cleanup, num = _num is a hack and should
-//       preferably be handled during allocation...
 template< class Type >
 void TList< Type >::Resize( int64 _num )
 {   
@@ -303,6 +315,10 @@ void TList< Type >::Resize( int64 _num )
         Clear();
     } else {
        Realloc( _num );
+	   for ( int64 i = num; i < _num; i++ ) {
+		   Memory_Place( ptr + i );
+	   }
+
        num = _num;
     }
 }
@@ -335,7 +351,16 @@ void TList< Type >::Shrink()
 }
 
 template< class Type >
-TSpan< Type > TList< Type >::Slice( int64 offset, int64 _num ) const
+TView< Type > TList< Type >::Slice( int64 offset, int64 _num ) const
+{
+    ASSERT( ( ptr + offset + _num ) >= ptr );
+    ASSERT( ( offset + _num ) <= num );
+    
+    return TView< Type >( ptr + offset, _num );
+}
+
+template< class Type >
+TSpan< Type > TList< Type >::Slice( int64 offset, int64 _num )
 {
     ASSERT( ( ptr + offset + _num ) >= ptr );
     ASSERT( ( offset + _num ) <= num );
@@ -396,7 +421,7 @@ constexpr const Type &TList< Type >::operator[]( int64 index ) const
 {
     ASSERT( ptr != nullptr );
     ASSERT( index >= 0 );
-    ASSERT( index < GetSize() );
+    ASSERT( index < num );
     
     return ptr[ index ];
 }
@@ -406,7 +431,7 @@ constexpr Type &TList< Type >::operator[]( int64 index )
 {
     ASSERT( ptr != nullptr );
     ASSERT( index >= 0 );
-    ASSERT( index < GetSize() );
+    ASSERT( index < num );
     
     return ptr[ index ];
 }
@@ -448,7 +473,9 @@ TList< Type > &TList< Type >::operator=( const TList &other )
     
     ptr = (Type *)Memory_Malloc( num * sizeof( Type ) );
     
-    Memory_Copy( ptr, other.ptr, num );
+	for ( int64 i = 0; i < num; i++ ) {
+		Memory_Place( ptr + i, other.ptr[ i ] );
+	}
     
     end = ptr + num;
     
@@ -462,15 +489,17 @@ void TList< Type >::Realloc( int64 size )
     
     Type *nptr = (Type *)Memory_Malloc( size * sizeof( Type ) );
     
-    int64 _num = MIN( num, size );
+    int64 nnum = MIN( num, size );
 
     if ( ptr != nullptr ) {
-        Memory_Copy( nptr, ptr, _num );
+		for ( int64 i = 0; i < nnum; i++ ) {
+			Memory_Place( nptr + i, std::move( ptr[ i ] ) );
+		}
     }
         
     Clear();
-        
-    num = _num;
+
+    num = nnum;
     ptr = nptr;
     end = ptr + size;
 }
@@ -478,13 +507,10 @@ void TList< Type >::Realloc( int64 size )
 template< class Type >
 void TList< Type >::Realloc()
 {
-    if ( ptr == nullptr ) {
-        ptr = (Type *)Memory_Malloc( 16 * sizeof( Type ) );
-        end = ptr + 16;
-    }
-    else {
-        int64 size = GetSize();
-        size += size >> 1;
-        Realloc( size );
-    }
+	int64 size = GetSize();
+	if ( size == 0 ) {
+		size = 8;
+	}
+
+	Realloc( size * 2 );
 }

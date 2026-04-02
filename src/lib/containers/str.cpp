@@ -466,6 +466,8 @@ int64 Str::FindIndex( int64 start, const char *_ptr, int64 _num ) const
     return INVALID_INT64;
 }
 
+// TODO: move to static method and delegate to that...
+// 		 also fill in Find methods for static str...
 int64 Str::FindLastIndex( int64 start, char value ) const
 {
     int64       num = GetLength();

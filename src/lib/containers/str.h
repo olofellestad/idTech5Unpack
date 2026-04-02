@@ -173,8 +173,8 @@ private:
     
 private:
     union {
-        HeapStr  hstr;
         StackStr sstr;
+        HeapStr  hstr;
     };
 };
 

@@ -15,6 +15,7 @@ public:
     
     ~TStaticList() = default;
     
+    constexpr int64 GetSize() const;
     constexpr int64 GetNum() const;
     
     constexpr int64 GetBytes() const;
@@ -30,7 +31,8 @@ public:
         return QuickSort( ptr, GetEnd(), sort );
     }
     
-    TSpan< Type > Slice( int64 offset, int64 num ) const;
+    TView< Type > Slice( int64 offset, int64 num ) const;
+    TSpan< Type > Slice( int64 offset, int64 num );
     
     int64       FindIndex( const Type &value ) const;
     const Type *Find( const Type &value ) const;
@@ -52,13 +54,23 @@ constexpr TStaticList< Type, NUM >::TStaticList( std::initializer_list< Type > v
 {
     ASSERT( values.size() == NUM );
     
-    Memory_Copy( ptr, values.begin(), NUM );
+	for ( int64 i = 0; i < NUM; i++ ) {
+		ptr[ i ] = values[ i ];
+	}
 }
 
 template< class Type, int64 NUM >
 constexpr TStaticList< Type, NUM >::TStaticList( const Type &value )
 {
-    Memory_Fill( ptr, value, NUM );
+	for ( int64 i = 0; i < NUM; i++ ) {
+		ptr[ i ] = value;
+	}
+}
+
+template< class Type, int64 NUM >
+constexpr int64 TStaticList< Type, NUM >::GetSize() const
+{
+    return NUM;
 }
 
 template< class Type, int64 NUM >
@@ -98,7 +110,16 @@ Type *TStaticList< Type, NUM >::GetEnd()
 }
 
 template< class Type, int64 NUM >
-TSpan< Type > TStaticList< Type, NUM >::Slice( int64 offset, int64 num ) const
+TView< Type > TStaticList< Type, NUM >::Slice( int64 offset, int64 num ) const
+{
+    ASSERT( ( ptr + offset + num ) >= ptr );
+    ASSERT( ( offset + num ) <= NUM );
+    
+    return TView< Type >( ptr + offset, num );
+}
+
+template< class Type, int64 NUM >
+TSpan< Type > TStaticList< Type, NUM >::Slice( int64 offset, int64 num )
 {
     ASSERT( ( ptr + offset + num ) >= ptr );
     ASSERT( ( offset + num ) <= NUM );

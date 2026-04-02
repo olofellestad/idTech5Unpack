@@ -30,15 +30,18 @@ void *Memory_Malloc( int64 size, const char *fileName, int fileLine )
     m->size         = size;
     
     allocInfo.Append( m );
-/*
+
     System_Info( "Memory_Malloc: %s:%i: %p ( %lli )",
                  ( (allocInfo_t *)m )->fileName,
                  ( (allocInfo_t *)m )->fileLine,
                  ( (void *)m ),
                  ( (allocInfo_t *)m )->size );
-*/
+
     currentMemory += m->size;
-    maximumMemory = MAX( maximumMemory, currentMemory );
+
+	if ( currentMemory > maximumMemory ) {
+		maximumMemory = currentMemory;
+	}
 
     ++currentAllocs;
 	++maximumAllocs;

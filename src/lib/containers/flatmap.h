@@ -1,6 +1,5 @@
 #pragma once
 
-// TODO: hash?
 template< class KType, class VType, class Sort = TSort< KType > >
 class TFlatMap
 {
@@ -24,8 +23,8 @@ public:
     constexpr const VType *GetEnd() const;
     VType *                GetEnd();
 
-    void Insert( const KType &key, const VType &value );
     void Insert( const KType &key, VType &&value );
+    void Insert( const KType &key, const VType &value );
 
     template< class... Args >
     void Emplace( const KType &key, Args&&... args );
@@ -122,20 +121,6 @@ VType *TFlatMap< KType, VType, Sort >::GetEnd()
 }
 
 template< class KType, class VType, class Sort >
-void TFlatMap< KType, VType, Sort >::Insert( const KType &key, const VType &value )
-{
-	const int64 index = LowerBound( keys.GetPtr(), keys.GetNum(), key, sort );
-
-	if ( index < keys.GetNum() && keys[ index ] == key ) {
-		values[ index ] = value;
-	}
-	else {
-		keys.Insert( index, key );
-		values.Insert( index, value );
-	}
-}
-
-template< class KType, class VType, class Sort >
 void TFlatMap< KType, VType, Sort >::Insert( const KType &key, VType &&value )
 {
 	const int64 index = LowerBound( keys.GetPtr(), keys.GetNum(), key, sort );
@@ -144,8 +129,22 @@ void TFlatMap< KType, VType, Sort >::Insert( const KType &key, VType &&value )
 		values[ index ] = std::move( value );
 	}
 	else {
-		keys.Insert( index, key );
 		values.Insert( index, std::move( value ) );
+		keys.Insert( index, key );
+	}
+}
+
+template< class KType, class VType, class Sort >
+void TFlatMap< KType, VType, Sort >::Insert( const KType &key, const VType &value )
+{
+	const int64 index = LowerBound( keys.GetPtr(), keys.GetNum(), key, sort );
+
+	if ( index < keys.GetNum() && keys[ index ] == key ) {
+		values[ index ] = value;
+	}
+	else {
+		values.Insert( index, value );
+		keys.Insert( index, key );
 	}
 }
 
@@ -159,8 +158,8 @@ void TFlatMap< KType, VType, Sort >::Emplace( const KType &key, Args&&... args )
 		values[ index ] = VType( std::forward< Args >( args )... );
 	}
 	else {
-		keys.Insert( index, key );
 		values.Emplace( index, std::forward< Args >( args )... );
+		keys.Insert( index, key );
 	}
 }
 
@@ -173,36 +172,36 @@ void TFlatMap< KType, VType, Sort >::Remove( const KType &key )
         return;
     }
 
-    keys.Remove( index );
     values.Remove( index );
+    keys.Remove( index );
 }
 
 template< class KType, class VType, class Sort >
 void TFlatMap< KType, VType, Sort >::Clear()
 {
-	keys.Clear();
 	values.Clear();
+	keys.Clear();
 }
 
 template< class KType, class VType, class Sort >
 void TFlatMap< KType, VType, Sort >::Resize( int64 num )
 {
-	keys.Resize( num );
 	values.Resize( num );
+	keys.Resize( num );
 }
 
 template< class KType, class VType, class Sort >
 void TFlatMap< KType, VType, Sort >::Reserve( int64 size )
 {
-	keys.Reserve( size );
 	values.Reserve( size );
+	keys.Reserve( size );
 }
 
 template< class KType, class VType, class Sort >
 void TFlatMap< KType, VType, Sort >::Shrink()
 {
-	keys.Shrink();
 	values.Shrink();
+	keys.Shrink();
 }
 
 template< class KType, class VType, class Sort >
@@ -247,8 +246,8 @@ constexpr VType &TFlatMap< KType, VType, Sort >::operator[]( const KType &key )
 		return values[ index ];
 	}
 
-	keys.Insert( index, key );
 	values.Insert( index, VType() );
+	keys.Insert( index, key );
 
 	return values[ index ];
 }
