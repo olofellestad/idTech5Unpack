@@ -304,6 +304,7 @@ void TList< Type >::Clear()
     num = 0;
 }
 
+// TODO: maybe remove?
 template< class Type >
 void TList< Type >::Resize( int64 _num )
 {   

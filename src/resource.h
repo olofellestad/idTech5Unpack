@@ -14,7 +14,7 @@ class ResourceFile
 	friend class Unpack;
 
 public:
-	ResourceFile( ResourceContainer *_rc );
+	ResourceFile( ResourceContainer *_rc = nullptr );
 	ResourceFile( ResourceFile &&other ) noexcept;
 	ResourceFile( const ResourceFile &other );
 
@@ -62,11 +62,8 @@ public:
 	void Unpack();
 
 private:
-#ifdef USE_STATIC_STR
-	TFlatMap< TStaticStr< 255 >, ResourceFile > files;
-#else
-	TFlatMap< Str, ResourceFile > files;
-#endif
+	// TFlatMap< TStaticStr< 255 >, ResourceFile > files;
+	TList< ResourceFile > files;
 
 	Str fileName;
 

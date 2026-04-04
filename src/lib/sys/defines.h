@@ -157,8 +157,8 @@
 #define MIN_FLOAT32 FLT_MIN
 #define MAX_FLOAT32 FLT_MAX
 
-#define MIN_TIME64 MIN_I64
-#define MAX_TIME64 MAX_I64
+#define MIN_TIME64 MIN_INT64
+#define MAX_TIME64 MAX_INT64
 
 using uint = unsigned int;
 

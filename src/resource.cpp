@@ -138,8 +138,35 @@ ResourceContainer::~ResourceContainer()
 	System_FileClose( fileHandle );
 }
 
+void Memory_Read( uint8 *&index, void *buffer, int64 size )
+{
+	std::memcpy( buffer, index, size );
+	index += size;
+}
+
+uint32 Memory_ReadUint32L( uint8 *&index )
+{
+	uint32 u = *(uint32 *)index;
+
+	index += sizeof( u );
+
+	return u;
+}
+
+uint32 Memory_ReadUint32B( uint8 *&index )
+{
+	uint32 u = *(uint32 *)index;
+
+	index += sizeof( u );
+
+	return BYTESWAP32( u );
+}
+
 void ResourceContainer::Load_RAGE()
 {
+	int64  n = System_FileSize( fileHandle );
+	time64 a = System_GetMicroseconds();
+
 	// Header
 	uint32 indexOffset = File_ReadUint32B( fileHandle );
 	uint32 indexSize   = File_ReadUint32B( fileHandle );
@@ -151,57 +178,92 @@ void ResourceContainer::Load_RAGE()
 	// Index
 	File_Seek( fileHandle, indexOffset );
 
-	uint32 numFiles = File_ReadUint32B( fileHandle );
+	uint8 *index = (uint8 *)Memory_Malloc( indexSize );
+	File_Read( fileHandle, index, indexSize );
 
-	// files.Resize( numFiles );
-	files.Reserve( numFiles );
+	uint8 *p = index;
+	// File_Memory file( index, indexSize, FILE_READ );
+
+	// uint32 numFiles = File_ReadUint32B( fileHandle );
+	uint32 numFiles = Memory_ReadUint32B( p );
+	// uint32 numFiles = file.ReadUint32();
+	// numFiles = BYTESWAP32( numFiles );
+
+	files.Resize( numFiles );
+	// files.Reserve( numFiles );
+
+	static char temp[ 128 ];
 
 	for ( uint32 i = 0; i < numFiles; i++ ) {
-		ResourceFile rf( this );
+		// ResourceFile rf( this );
 
-		uint32 unknown03 = File_ReadUint32B( fileHandle ); // flags?
+		ResourceFile &rf = files[ i ];
+		rf.rc 			 = this;
+
+		// uint32 unknown03 = File_ReadUint32B( fileHandle ); // flags?
+		uint32 unknown03 = Memory_ReadUint32B( p ); // flags?
 		(void)unknown03;
 
-		uint32 typeNameLen = File_ReadUint32L( fileHandle );
+		// uint32 typeNameLen = File_ReadUint32L( fileHandle );
+		uint32 typeNameLen = Memory_ReadUint32L( p );
 		rf.typeName.Resize( typeNameLen );
-		File_Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
+		// File_Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
+		Memory_Read( p, rf.typeName.GetPtr(), typeNameLen );
 		rf.typeName[ typeNameLen ] = '\0';
 
-		uint32 srcNameLen = File_ReadUint32L( fileHandle );
+		// uint32 srcNameLen = File_ReadUint32L( fileHandle );
+		uint32 srcNameLen = Memory_ReadUint32L( p );
 		rf.srcName.Resize( srcNameLen );
-		File_Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
+		// File_Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
+		Memory_Read( p, rf.srcName.GetPtr(), srcNameLen );
 		rf.srcName[ srcNameLen ] = '\0';
 
-		uint32 dstNameLen = File_ReadUint32L( fileHandle );
+		// uint32 dstNameLen = File_ReadUint32L( fileHandle );
+		uint32 dstNameLen = Memory_ReadUint32L( p );
 		rf.dstName.Resize( dstNameLen );
-		File_Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
+		// File_Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
+		Memory_Read( p, rf.dstName.GetPtr(), dstNameLen );
 		rf.dstName[ dstNameLen ] = '\0';
 
-		rf.dstOffset = File_ReadUint32B( fileHandle );
-		rf.srcSize	 = File_ReadUint32B( fileHandle );
-		rf.dstSize	 = File_ReadUint32B( fileHandle );
+		// rf.dstOffset = File_ReadUint32B( fileHandle );
+		rf.dstOffset = Memory_ReadUint32B( p );
+		// rf.srcSize	 = File_ReadUint32B( fileHandle );
+		rf.srcSize	 = Memory_ReadUint32B( p );
+		// rf.dstSize	 = File_ReadUint32B( fileHandle );
+		rf.dstSize	 = Memory_ReadUint32B( p );
 
 		// optional data, for idmsa files this is a list of languages
 		// each entry is always 24 bytes
-		uint32 numUnknown = File_ReadUint32B( fileHandle );
+		// uint32 numUnknown = File_ReadUint32B( fileHandle );
+		uint32 numUnknown = Memory_ReadUint32B( p );
 		for ( uint32 j = 0; j < numUnknown; j++ ) {
-			(void)File_ReadUint32B( fileHandle ); // ???
-			(void)File_ReadUint32B( fileHandle ); // ???
-			(void)File_ReadUint32B( fileHandle ); // ???
-			(void)File_ReadUint32B( fileHandle ); // ???
-			(void)File_ReadUint32B( fileHandle ); // ???
-			(void)File_ReadUint32B( fileHandle ); // ???
+			// (void)File_ReadUint32B( fileHandle ); // ???
+			// (void)File_ReadUint32B( fileHandle ); // ???
+			// (void)File_ReadUint32B( fileHandle ); // ???
+			// (void)File_ReadUint32B( fileHandle ); // ???
+			// (void)File_ReadUint32B( fileHandle ); // ???
+			// (void)File_ReadUint32B( fileHandle ); // ???
+			Memory_Read( p, temp, 24 );
 		}
 
 		// some kind of checksum? seems to be the same for all files
-		(void)File_ReadUint32B( fileHandle ); // ??? always 0x00FFFFFF ( be )
-		(void)File_ReadUint32B( fileHandle ); // ??? always 0x00000000 ( be )
-		(void)File_ReadUint32B( fileHandle ); // ??? always 0x4318BEFD ( be ) in .resources, checksum?
-		(void)File_ReadUint32B( fileHandle ); // ??? always 0xFE070000 ( be ) in .resources, checksum?
-		(void)File_ReadUint32B( fileHandle ); // ??? always 0x00000000 ( be )
-		
-		files.Insert( rf.dstName, std::move( rf ) );
+		// (void)File_ReadUint32B( fileHandle ); // ??? always 0x00FFFFFF ( be )
+		// (void)File_ReadUint32B( fileHandle ); // ??? always 0x00000000 ( be )
+		// (void)File_ReadUint32B( fileHandle ); // ??? always 0x4318BEFD ( be ) in .resources, checksum?
+		// (void)File_ReadUint32B( fileHandle ); // ??? always 0xFE070000 ( be ) in .resources, checksum?
+		// (void)File_ReadUint32B( fileHandle ); // ??? always 0x00000000 ( be )
+		Memory_Read( p, temp, 20 );
+
+		// files.Insert( rf.dstName, std::move( rf ) );
 	}
+
+	Memory_Free( index );
+
+	time64 b   = System_GetMicroseconds();
+	float32 ms = ( (float32)b - a ) / 1000.0f;
+	System_Info( "parsing took %f ms", ms );
+	System_Info( "%f MB/ms", ( n / 1000000ll ) / ms );
+	System_Info( "%lli MB", n / 1000000ll );
 }
 
 void ResourceContainer::Unpack()
