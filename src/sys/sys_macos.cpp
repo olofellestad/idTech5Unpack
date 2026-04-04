@@ -5,8 +5,6 @@ void System_Quit( int code )
     exit( code );
 }
 
-struct Foo{Foo(){printf("Foo!\n");}~Foo(){printf("~Foo!\n");}};
-
 int main( int argc, char **argv )
 {
 	if ( !unpack->Init( argc, argv ) ) {
