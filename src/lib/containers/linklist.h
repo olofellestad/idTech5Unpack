@@ -141,7 +141,7 @@ TLinkList< Type > &TLinkList< Type >::operator=( TLinkList &&other ) noexcept
         return *this;
     }
     
-    head = other.head;
+    head			= other.head;
     other.head.next = &other.head;
     other.head.prev = &other.head;
     

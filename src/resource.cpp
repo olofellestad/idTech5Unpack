@@ -50,11 +50,8 @@ bool ResourceFile::Unpack()
 	outName.Format( "%.*s/%s", (int64)( rcExt - rcPtr ),
 							   rcPtr, dstName.GetPtr() );
 
-	const char *srcExt = Str::Find( srcName.GetPtr(), '.' );
-	const char *dstExt = Str::Find( dstName.GetPtr(), '.' );
-
 	// TODO: DEFLATE compression
-	if ( IsCompressed() && Str::ICompare( srcExt, dstExt ) != 0 ) {
+	if ( IsCompressed() ) {
 		return false;
 	}
 
@@ -161,73 +158,41 @@ void ResourceContainer::Load_RAGE()
 	uint8 *index = (uint8 *)Memory_Malloc( indexSize );
 	File_Read( fileHandle, index, indexSize );
 
-	// uint8 *p = index;
 	File_Memory indexFile( index, indexSize, FILE_READ );
 
-	// uint32 numFiles = File_ReadUint32B( fileHandle );
-	// uint32 numFiles = Memory_ReadUint32B( p );
-	// uint32 numFiles = indexFile.ReadUint32();
-	// numFiles = BYTESWAP32( numFiles );
 	uint32 numFiles; READBIGUINT32( &indexFile, numFiles );
 
 	files.Resize( numFiles );
-	// files.Reserve( numFiles );
 
-	static char temp[ 128 ];
+	char temp[ 128 ];
 
 	for ( uint32 i = 0; i < numFiles; i++ ) {
-		// ResourceFile rf( this );
-
 		ResourceFile &rf = files[ i ];
 		rf.rc 			 = this;
 
-		// uint32 unknown03 = File_ReadUint32B( fileHandle ); // flags?
-		// uint32 unknown03 = Memory_ReadUint32B( p ); // flags?
-		// uint32 unknown03 = indexFile.ReadUint32();
-		// unknown03 = BYTESWAP32( unknown03 );
 		uint32 unknown03; READBIGUINT32( &indexFile, unknown03 );
 
-		// uint32 typeNameLen = File_ReadUint32L( fileHandle );
-		// uint32 typeNameLen = Memory_ReadUint32L( p );
 		uint32 typeNameLen = indexFile.ReadUint32(); 
 		rf.typeName.Resize( typeNameLen );
-		// File_Read( fileHandle, rf.typeName.GetPtr(), typeNameLen );
-		// Memory_Read( p, rf.typeName.GetPtr(), typeNameLen );
 		indexFile.Read( rf.typeName.GetPtr(), typeNameLen );
 		rf.typeName[ typeNameLen ] = '\0';
 
-		// uint32 srcNameLen = File_ReadUint32L( fileHandle );
-		// uint32 srcNameLen = Memory_ReadUint32L( p );
 		uint32 srcNameLen = indexFile.ReadUint32(); 
 		rf.srcName.Resize( srcNameLen );
-		// File_Read( fileHandle, rf.srcName.GetPtr(), srcNameLen );
-		// Memory_Read( p, rf.srcName.GetPtr(), srcNameLen );
 		indexFile.Read( rf.srcName.GetPtr(), srcNameLen );
 		rf.srcName[ srcNameLen ] = '\0';
 
-		// uint32 dstNameLen = File_ReadUint32L( fileHandle );
-		// uint32 dstNameLen = Memory_ReadUint32L( p );
 		uint32 dstNameLen = indexFile.ReadUint32(); 
 		rf.dstName.Resize( dstNameLen );
-		// File_Read( fileHandle, rf.dstName.GetPtr(), dstNameLen );
-		// Memory_Read( p, rf.dstName.GetPtr(), dstNameLen );
 		indexFile.Read( rf.dstName.GetPtr(), dstNameLen );
 		rf.dstName[ dstNameLen ] = '\0';
 
-		// rf.dstOffset = File_ReadUint32B( fileHandle );
-		// rf.dstOffset = Memory_ReadUint32B( p );
 		READBIGUINT32( &indexFile, rf.dstOffset );
-		// rf.srcSize	 = File_ReadUint32B( fileHandle );
-		// rf.srcSize	 = Memory_ReadUint32B( p );
 		READBIGUINT32( &indexFile, rf.srcSize );
-		// rf.dstSize	 = File_ReadUint32B( fileHandle );
-		// rf.dstSize	 = Memory_ReadUint32B( p );
 		READBIGUINT32( &indexFile, rf.dstSize );
 
 		// optional data, for idmsa files this is a list of languages
 		// each entry is always 24 bytes
-		// uint32 numUnknown = File_ReadUint32B( fileHandle );
-		// uint32 numUnknown = Memory_ReadUint32B( p );
 		uint32 numUnknown; READBIGUINT32( &indexFile, numUnknown );
 		for ( uint32 j = 0; j < numUnknown; j++ ) {
 			// (void)File_ReadUint32B( fileHandle ); // ???
@@ -236,7 +201,6 @@ void ResourceContainer::Load_RAGE()
 			// (void)File_ReadUint32B( fileHandle ); // ???
 			// (void)File_ReadUint32B( fileHandle ); // ???
 			// (void)File_ReadUint32B( fileHandle ); // ???
-			// Memory_Read( p, temp, 24 );
 			indexFile.Read( temp, 24 );
 		}
 
@@ -246,10 +210,7 @@ void ResourceContainer::Load_RAGE()
 		// (void)File_ReadUint32B( fileHandle ); // ??? always 0x4318BEFD ( be ) in .resources, checksum?
 		// (void)File_ReadUint32B( fileHandle ); // ??? always 0xFE070000 ( be ) in .resources, checksum?
 		// (void)File_ReadUint32B( fileHandle ); // ??? always 0x00000000 ( be )
-		// Memory_Read( p, temp, 20 );
 		indexFile.Read( temp, 20 );
-
-		// files.Insert( rf.dstName, std::move( rf ) );
 	}
 
 	Memory_Free( index );

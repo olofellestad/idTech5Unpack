@@ -22,7 +22,7 @@ static const char *MACOS_GetErrorMessage()
     return message;
 }
 
-static time64 MACOS_TimespecTotime64( struct timespec ts )
+static time64 MACOS_TimespecToTime64( struct timespec ts )
 {
     return (time64)ts.tv_sec * 1000000LL + ts.tv_nsec / 1000;
 }
@@ -226,8 +226,8 @@ int64 System_GetMicroseconds()
     struct timespec ts = {};
     clock_gettime( CLOCK_MONOTONIC, &ts );
     
-    static int64 timeBase = MACOS_TimespecTotime64( ts );
-    int64 timeNow         = MACOS_TimespecTotime64( ts );
+    static int64 timeBase = MACOS_TimespecToTime64( ts );
+    int64 timeNow         = MACOS_TimespecToTime64( ts );
     return timeNow - timeBase;
 }
 
@@ -236,7 +236,7 @@ time64 System_GetTime()
     struct timespec ts = {};
     clock_gettime( CLOCK_REALTIME, &ts );
     
-    return MACOS_TimespecTotime64( ts );
+    return MACOS_TimespecToTime64( ts );
 }
 
 bool System_TimeToDateTime( time64 t, dateTime_t *dt )

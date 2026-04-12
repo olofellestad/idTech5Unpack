@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#include <miniz_tinfl.h>
+// #include <miniz_tinfl.h>
 
 static Unpack _unpack;
 Unpack		 *unpack = &_unpack;
